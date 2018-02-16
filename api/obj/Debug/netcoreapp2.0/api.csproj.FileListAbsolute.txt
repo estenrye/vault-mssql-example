@@ -1,0 +1,10 @@
+C:\Users\esten\Source\Repos\vault-mssql-example\api\obj\Debug\netcoreapp2.0\api.csproj.CoreCompileInputs.cache
+C:\Users\esten\Source\Repos\vault-mssql-example\api\obj\Debug\netcoreapp2.0\api.AssemblyInfoInputs.cache
+C:\Users\esten\Source\Repos\vault-mssql-example\api\obj\Debug\netcoreapp2.0\api.AssemblyInfo.cs
+C:\Users\esten\Source\Repos\vault-mssql-example\api\bin\Debug\netcoreapp2.0\api.deps.json
+C:\Users\esten\Source\Repos\vault-mssql-example\api\bin\Debug\netcoreapp2.0\api.runtimeconfig.json
+C:\Users\esten\Source\Repos\vault-mssql-example\api\bin\Debug\netcoreapp2.0\api.runtimeconfig.dev.json
+C:\Users\esten\Source\Repos\vault-mssql-example\api\bin\Debug\netcoreapp2.0\api.dll
+C:\Users\esten\Source\Repos\vault-mssql-example\api\bin\Debug\netcoreapp2.0\api.pdb
+C:\Users\esten\Source\Repos\vault-mssql-example\api\obj\Debug\netcoreapp2.0\api.dll
+C:\Users\esten\Source\Repos\vault-mssql-example\api\obj\Debug\netcoreapp2.0\api.pdb
