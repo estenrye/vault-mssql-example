@@ -1,0 +1,17 @@
+{
+	"[dockerfile]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4,
+		"editor.detectIndentation": false
+	},
+
+	"[shellscript]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4,
+		"editor.detectIndentation": false,
+	},
+
+	"editor.insertSpaces":false,
+	"editor.tabSize": 4,
+	"files.eol": "\n"
+}
