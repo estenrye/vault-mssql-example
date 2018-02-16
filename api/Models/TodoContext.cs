@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Vault;
+using Vault.Models;
 using Vault.Models.Auth.AppRole;
+using System.Collections.Generic;
 
 namespace TodoApi.Models
 {
@@ -28,22 +30,21 @@ namespace TodoApi.Models
 			var vaultUriWithPort = configuration.GetValue<System.Uri>("Vault:UriWithPort");
 			var roleName = configuration.GetValue<string>("Vault:RoleName");
 
-            var appRole = new LoginRequest() 
+			var appRole = new LoginRequest() 
 			{
 				RoleId = roleId,
 				SecretId = secretId
 			};
 			var vaultClient = new VaultClient();
-			var loginResponse = vaultClient.Auth.Write<LoginRequest>("auth/approle/login", appRole).Result;
-			// IOptions<VaultOptions> vaultOptions = new 
-            // IVaultClient vaultClient = VaultClientFactory.CreateVaultClient(vaultUriWithPort, appRoleAuthenticationInfo);
-            // var msSqlCredentials = vaultClient.MicrosoftSqlGenerateDynamicCredentialsAsync(roleName, mountPoint).Result;
+			var loginResponse = vaultClient.Auth.Write<LoginRequest, NoData>("auth/approle/login", appRole).Result;
+			vaultClient.Token = loginResponse.Auth.ClientToken;
+			var credentialResponse = vaultClient.Secret.Read<Dictionary<string,string>>($"database/creds/{appRole}").Result;
 
-            // var msSqlUsername = msSqlCredentials.Data.Username;
-            // var msSqlPassword = msSqlCredentials.Data.Password;
+			var msSqlUsername = credentialResponse.Data["username"];
+			var msSqlPassword = credentialResponse.Data["password"];
 
-			// var connectionString = string.Format(connectionStringFormat, msSqlUsername, msSqlPassword);
-            // optionsBuilder.UseSqlServer(connectionString);		
+			var connectionString = string.Format(connectionStringFormat, msSqlUsername, msSqlPassword);
+			optionsBuilder.UseSqlServer(connectionString);
 		}
 		protected override void OnModelCreating(ModelBuilder builder) {
 			builder.Entity<TodoItem>(entity =>
