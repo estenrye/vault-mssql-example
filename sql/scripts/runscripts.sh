@@ -10,3 +10,4 @@ for i in {30..0}; do
 done
 
 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i /scripts/CreateVaultUser.sql
+/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i /scripts/CreateTodoDatabase.sql
