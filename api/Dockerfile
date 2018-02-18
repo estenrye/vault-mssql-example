@@ -7,8 +7,8 @@ COPY . .
 RUN dotnet publish -c Release -o /out
 
 FROM microsoft/aspnetcore:2.0.5-jessie
+EXPOSE 80
 LABEL build="vault"
 WORKDIR /app
 COPY --from=build /out .
-
-ENTRYPOINT [ "dotnet", "run", "api.dll" ]
+ENTRYPOINT [ "dotnet", "api.dll" ]
