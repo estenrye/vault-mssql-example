@@ -18,7 +18,7 @@ vault unseal -address=http://127.0.0.1:8200 key3
 
 vault auth -address=http://127.0.0.1:8200 token
 
-vault mount -address=http://127.0.0.1:8200 database
+vault secrets enable -address=http://127.0.0.1:8200 database
 
 # need to start a compose file that launches sql server first.
 # vault and mssql need to be on the same docker network.
@@ -30,7 +30,7 @@ vault write -address=http://127.0.0.1:8200 \
         connection_url='sqlserver://APP_vault_securityAdmin:vaultPassword1234@mssql-server:1433' \
         allowed_roles="todo-api-role"
 
-vault write database/roles/todo-api-role \
+vault write -address=http://127.0.0.1:8200 database/roles/todo-api-role \
     db_name=Todo \
     creation_statements="CREATE LOGIN [{{name}}] WITH PASSWORD = '{{password}}'; \
                          CREATE USER [{{name}}] FOR LOGIN [{{name}}]; \
@@ -38,3 +38,12 @@ vault write database/roles/todo-api-role \
                          ALTER ROLE db_writer ADD MEMBER [{{name}}];" \
     default_ttl="5m" \
     max_ttl="10m"
+
+vault auth enable -address=http://127.0.0.1:8200 approle
+
+vault write -address=http://127.0.0.1:8200 auth/approle/role/todo-api-role \
+    token_ttl=20m \
+    token_max_ttl=30m
+
+vault read -address=http://127.0.0.1:8200 auth/approle/role/todo-api-role/role-id
+vault write -address=http://127.0.0.1:8200 -f auth/approle/role/todo-api-role/secret-id
