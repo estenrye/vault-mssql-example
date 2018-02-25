@@ -32,3 +32,8 @@ docker run `
 	-v "$($intermediateWorkDir):/intermediate" `
 	-it frapsoft/openssl x509 -noout -text `
 	-in /intermediate/ca/certs/consul.cert.pem
+
+$targetDir = "$PSScriptRoot/../consul/certs"
+Copy-Item $intermediateWorkDir/ca/certs/consul.cert.pem $targetDir/consul.cert.pem -Force
+Copy-Item $intermediateWorkDir/ca/private/consul.key.pem $targetDir/consul.key.pem -Force
+Copy-Item $intermediateWorkDir/ca/certs/ca-chain.cert.pem $targetDir/ca-chain.cert.pem -Force
