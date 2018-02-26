@@ -1,20 +1,34 @@
+param([switch]$PasswordProtectKeys)
+
 # Create the path to the output directory for the Certificate Authorities
 $scriptWorkingDirectory = Join-Path $PSScriptRoot ../output
 
 # Set the working directory for the Intermediate Certificate Authority.
 $intermediateWorkDir = Join-Path $scriptWorkingDirectory intermediate
 
+Copy-Item $PSScriptRoot/conf/openssl_consul.cnf $intermediateWorkDir/ca/csr/consul.csr.cnf
+
 # Generate a private key for Consul.
-docker run `
-	--rm `
-	-v "$($intermediateWorkDir):/intermediate" `
-	-it frapsoft/openssl genrsa -out /intermediate/ca/private/consul.key.pem 2048
+if ($PasswordProtectKeys)
+{
+	docker run `
+		--rm `
+		-v "$($intermediateWorkDir):/intermediate" `
+		-it frapsoft/openssl genrsa -aes256 -out /intermediate/ca/private/consul.key.pem 2048
+}
+else 
+{
+	docker run `
+		--rm `
+		-v "$($intermediateWorkDir):/intermediate" `
+		-it frapsoft/openssl genrsa -out /intermediate/ca/private/consul.key.pem 2048
+}
 
 # Generate a CSR for Consul
 docker run `
 	--rm `
 	-v "$($intermediateWorkDir):/intermediate" `
-	-it frapsoft/openssl req -config /intermediate/ca/openssl.cnf -new -sha256  `
+	-it frapsoft/openssl req -config /intermediate/ca/csr/consul.csr.cnf -new -sha256  `
 	-key /intermediate/ca/private/consul.key.pem `
 	-out /intermediate/ca/csr/consul.csr.pem
 
@@ -34,6 +48,10 @@ docker run `
 	-in /intermediate/ca/certs/consul.cert.pem
 
 $targetDir = "$PSScriptRoot/../consul/certs"
+if (-not (Test-Path $targetDir))
+{
+	New-Item -ItemType Directory $targetDir -Force
+}
 Copy-Item $intermediateWorkDir/ca/certs/consul.cert.pem $targetDir/consul.cert.pem -Force
 Copy-Item $intermediateWorkDir/ca/private/consul.key.pem $targetDir/consul.key.pem -Force
 Copy-Item $intermediateWorkDir/ca/certs/ca-chain.cert.pem $targetDir/ca-chain.cert.pem -Force

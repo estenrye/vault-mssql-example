@@ -1,3 +1,5 @@
+param([switch]$PasswordProtectKeys)
+
 # Create the path to the output directory for the Certificate Authorities
 $scriptWorkingDirectory = Join-Path $PSScriptRoot ../output
 
@@ -47,10 +49,20 @@ $rootWorkDir = Join-Path $scriptWorkingDirectory root
 Copy-Item $PSScriptRoot\conf\openssl_root.cnf (Join-Path $rootWorkDir ca\openssl.cnf) -Force
 
 # Generate the Root Certificate Authority private key.
-docker run `
-	--rm `
-	-v "$($rootWorkDir):/root" `
-	-it frapsoft/openssl genrsa -aes256 -out /root/ca/private/ca.key.pem 4096
+if ($PasswordProtectKeys)
+{
+	docker run `
+		--rm `
+		-v "$($rootWorkDir):/root" `
+		-it frapsoft/openssl genrsa -aes256 -out /root/ca/private/ca.key.pem 4096
+}
+else
+{
+	docker run `
+		--rm `
+		-v "$($rootWorkDir):/root" `
+		-it frapsoft/openssl genrsa -out /root/ca/private/ca.key.pem 4096
+}
 
 # Generate the Root Certificate Authority Certificate
 docker run `
@@ -74,11 +86,20 @@ $intermediateWorkDir = Join-Path $scriptWorkingDirectory intermediate
 Copy-Item $PSScriptRoot\conf\openssl_intermediate.cnf (Join-Path $intermediateWorkDir ca\openssl.cnf) -Force
 
 # Generate the Intermediate Certificate Authority private key.
-docker run `
-	--rm `
-	-v "$($intermediateWorkDir):/intermediate" `
-	-it frapsoft/openssl genrsa -aes256 -out /intermediate/ca/private/intermediate.key.pem 4096
-
+if ($PasswordProtectKeys)
+{
+	docker run `
+		--rm `
+		-v "$($intermediateWorkDir):/intermediate" `
+		-it frapsoft/openssl genrsa -aes256 -out /intermediate/ca/private/intermediate.key.pem 4096
+}
+else
+{
+	docker run `
+		--rm `
+		-v "$($intermediateWorkDir):/intermediate" `
+		-it frapsoft/openssl genrsa -out /intermediate/ca/private/intermediate.key.pem 4096	
+}
 # Use the Intermediate Certificate Authority private key to generate a CSR
 docker run `
 	--rm `

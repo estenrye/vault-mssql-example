@@ -15,3 +15,6 @@ Implement a proof of concept implementation of Hashicorp’s Vault product.  Thi
 # Special Thanks To:
 Jamie Nguyen - Your openssl tutorial is a thing of beauty, without which would have taken way more time to get a CA up and running.
 - https://jamielinux.com/docs/openssl-certificate-authority/index.html
+
+Chandran Kumar - Your article was a great help in figuring out how to create a certificate with a SAN.
+- https://geekflare.com/san-ssl-certificate/
