@@ -2,7 +2,7 @@
 	"datacenter": "east-aws",
 	"data_dir": "/opt/consul",
 	"log_level": "INFO",
-	"node_name": "foobar",
+	"node_name": "consul",
 	"server": true,
 	"addresses": {
 	  "https": "0.0.0.0"
@@ -10,7 +10,7 @@
 	"ports": {
 	  "https": 8080
 	},
-	"key_file": "/etc/pki/tls/private/my.key",
-	"cert_file": "/etc/pki/tls/certs/my.crt",
-	"ca_file": "/etc/pki/tls/certs/ca-bundle.crt"
+	"key_file": "/opt/tls/private/consul.key.pem",
+	"cert_file": "/opt/tls/certs/consul.cert.pem",
+	"ca_file": "/opt/tls/certs/ca-chain.cert.pem"
   }

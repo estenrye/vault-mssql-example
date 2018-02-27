@@ -47,11 +47,13 @@ docker run `
 	-it frapsoft/openssl x509 -noout -text `
 	-in /intermediate/ca/certs/consul.cert.pem
 
-$targetDir = "$PSScriptRoot/../consul/certs"
+$targetDir = "$PSScriptRoot/../consul/tls"
 if (-not (Test-Path $targetDir))
 {
 	New-Item -ItemType Directory $targetDir -Force
+	New-Item -ItemType Directory (Join-Path $targetDir private)
+	New-Item -ItemType Directory (Join-Path $targetDir certs)
 }
-Copy-Item $intermediateWorkDir/ca/certs/consul.cert.pem $targetDir/consul.cert.pem -Force
-Copy-Item $intermediateWorkDir/ca/private/consul.key.pem $targetDir/consul.key.pem -Force
-Copy-Item $intermediateWorkDir/ca/certs/ca-chain.cert.pem $targetDir/ca-chain.cert.pem -Force
+Copy-Item $intermediateWorkDir/ca/certs/consul.cert.pem $targetDir/certs/consul.cert.pem -Force
+Copy-Item $intermediateWorkDir/ca/private/consul.key.pem $targetDir/private/consul.key.pem -Force
+Copy-Item $intermediateWorkDir/ca/certs/ca-chain.cert.pem $targetDir/certs/ca-chain.cert.pem -Force
