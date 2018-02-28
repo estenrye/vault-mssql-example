@@ -10,7 +10,7 @@
 	"ports": {
 	  "https": 8080
 	},
-	"key_file": "/opt/tls/private/consul.key.pem",
-	"cert_file": "/opt/tls/certs/consul.cert.pem",
-	"ca_file": "/opt/tls/certs/ca-chain.cert.pem"
+	"key_file": "/etc/pki/tls/private/consul.key.pem",
+	"cert_file": "/etc/pki/tls/certs/consul.cert.pem",
+	"ca_file": "/etc/pki/tls/certs/ca-chain.cert.pem"
   }

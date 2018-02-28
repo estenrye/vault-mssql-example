@@ -1,2 +1,2 @@
 FROM consul
-COPY /tls /opt/tls
+COPY /tls /etc/pki/tls
