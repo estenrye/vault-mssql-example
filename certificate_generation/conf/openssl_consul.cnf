@@ -21,3 +21,6 @@ commonName_default              = consul
 subjectAltName = @alt_names
 [alt_names]
 DNS.1   = consul
+DNS.2   = consul1
+DNS.3   = consul2
+DNS.4   = consul3

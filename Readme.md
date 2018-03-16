@@ -18,3 +18,9 @@ Jamie Nguyen - Your openssl tutorial is a thing of beauty, without which would h
 
 Chandran Kumar - Your article was a great help in figuring out how to create a certificate with a SAN.
 - https://geekflare.com/san-ssl-certificate/
+
+Bhavik Kumar - Your blog posts on Consul and Vault were extremely helpful.
+- https://bhavik.io/2017/12/19/consul-with-docker-swarm-mode.html
+- https://bhavik.io/2018/01/09/vault-with-docker-swarm-mode.html
+
+See https://www.consul.io/docs/agent/options.html for encrypt value.
