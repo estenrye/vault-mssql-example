@@ -828,6 +828,12 @@
             "Default": "standard",
             "Description": "Worker ephemeral storage volume type",
             "Type": "String"
+        },
+        "ConsulEncryptionToken": {
+            "Type":"String",
+            "Description": "Token used to encrypt the Gossip protocol commuincation between consul server instances.",
+            "MaxLength":24,
+            "MinLength":24
         }
     },
     "Resources": {
@@ -1604,6 +1610,21 @@
                                     "Ref": "EnableSystemPrune"
                                 },
                                 "'\n",
+                                "echo \"export AWS_REGION='",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "'\" > /home/docker/.profile\n",
+                                "echo 'export MANAGER_COUNT=",
+                                {
+                                    "Ref": "ManagerSize"
+                                },
+                                "' >> /home/docker/.profile\n",
+                                "echo \"export ENCRYPTION_TOKEN='",
+                                {
+                                    "Ref":"ConsulEncryptionToken"
+                                },
+                                "'\" >> /home/docker/.profile\n",
                                 "export LOG_GROUP_NAME='",
                                 {
                                     "Fn::Join": [
