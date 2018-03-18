@@ -39,22 +39,54 @@ The first modification to this stack was to add logic to the userdata script on 
                             "",
                             [
                                 // excerpted for brevity
-                                "echo \"export AWS_REGION='",
+                                "export AWS_REGION='",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "'\" > /home/docker/.profile\n",
-                                "echo 'export MANAGER_COUNT=",
+                                "'\n",
+                                "export MANAGER_COUNT=",
                                 {
                                     "Ref": "ManagerSize"
                                 },
-                                "' >> /home/docker/.profile\n",
-                                "echo \"export ENCRYPTION_TOKEN='",
+                                "\n",
+                                "export ENCRYPTION_TOKEN='",
                                 {
                                     "Ref":"ConsulEncryptionToken"
                                 },
-                                "'\" >> /home/docker/.profile\n",
+                                "'\n",
                                 // excerpted for brevity
+                                "mkdir -p /home/docker/consul\n",
+                                "docker run --rm -e REGION=$AWS_REGION -e MANAGER_COUNT=$MANAGER_COUNT -e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN -v /home/docker/consul:/out estenrye/aws-consul-swarm-config-writer:server\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            // excerpted out for brevity
+        },
+        // excerpted out for brevity
+        "NodeLaunchConfig17121ceaws1": {
+            // excerpted out for brevity
+            "Properties": {
+                // excerpted out for brevity
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            [
+                                // excerpted for brevity
+                                "export AWS_REGION='",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "'\n",
+                                "export ENCRYPTION_TOKEN='",
+                                {
+                                    "Ref":"ConsulEncryptionToken"
+                                },
+                                "'\n",
+                                // excerpted for brevity
+                                "mkdir -p /home/docker/consul\n",
+                                "docker run --rm -e REGION=$AWS_REGION -e MANAGER_COUNT=$MANAGER_COUNT -e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN -v /home/docker/consul:/out estenrye/aws-consul-swarm-config-writer:agent\n"
                             ]
                         ]
                     }
