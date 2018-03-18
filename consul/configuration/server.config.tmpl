@@ -18,5 +18,12 @@
 	},
 	"disable_update_check": true,
 	"log_level": "warn",
-	"encrypt": "<<ENCRYPTION_TOKEN>>"
-  }
+	"encrypt": "<<ENCRYPTION_TOKEN>>",
+	"ports": {
+		"http":-1,
+    "https": 8500
+  },
+  "key_file": "/run/secrets/consul.key.pem",
+  "cert_file": "/run/secrets/consul.cert.pem",
+  "ca_file": "/run/secrets/ca-chain.cert.pem"
+}

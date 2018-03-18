@@ -3,6 +3,23 @@ version: '3.3'
 networks:
   default_net:
     external: true
+secrets:
+  agent-config:
+    external:
+      name: consul.agent.config.json
+  server-config:
+    external:
+      name: consul.server.config.json
+  ca:
+    external:
+      name: ca-chain.cert.pem
+  cert:
+    external:
+      name: consul.cert.pem
+  key:
+    external:
+      name: consul.key.pem
+  
 services:
   # Deploy the consul server instances
   server:
@@ -12,11 +29,22 @@ services:
         aliases:
           - consul.server
     # Start the consul server with the given configuration
-    command: "consul agent -config-file /consul/config/config.json"
-    # Mount the configuration and data volumes to the container.
+    command: "consul agent -config-file /run/secrets/config.json"
+    # Mount the data volumes to the container.
     volumes:
-      - /home/docker/consul:/consul/config
-      - /home/docker/consul/data:/consul/data
+      - type: bind
+        source: /home/docker/consul/data
+        target: /consul/data
+    # Mount the configuration and TLS certificates
+    secrets:
+      - source: server-config
+        target: config.json
+      - source: ca
+        target: ca-chain.cert.pem
+      - source: cert
+        target: consul.cert.pem
+      - source: key
+        target: consul.key.pem
     # Deploy the consul server on all servers which are managers.
     # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
     # consul server instances when querying consul.server
@@ -40,7 +68,7 @@ services:
         - traefik.frontend.rule=Host:consul-ui.d.ryezone.com
         - traefik.enable=true
         - traefik.port=8500
-        - traefik.protocol=http
+        - traefik.protocol=https
   # Deploy the consul agent instances
   agent:
     image: consul:latest
@@ -49,11 +77,23 @@ services:
         aliases:
           - consul.server
      # Start the consul agent with the given configuration          
-    command: "consul agent -config-file /consul/config/config.json"
+    command: "consul agent -config-file /run/secrets/config.json"
     # Mount the configuration and data volumes to the container.
+    # Mount the data volumes to the container.
     volumes:
-      - /home/docker/consul:/consul/config
-      - /home/docker/consul/data:/consul/data
+      - type: bind
+        source: /home/docker/consul/data
+        target: /consul/data
+    # Mount the configuration and TLS certificates
+    secrets:
+      - source: agent-config
+        target: config.json
+      - source: ca
+        target: ca-chain.cert.pem
+      - source: cert
+        target: consul.cert.pem
+      - source: key
+        target: consul.key.pem
     # Deploy the consul agent on all servers which are workers.
     # Use DNS Round Robin instead VIP for discovery.  
     deploy:
@@ -76,4 +116,4 @@ services:
         - traefik.frontend.rule=Host:consul-api.d.ryezone.com
         - traefik.enable=true
         - traefik.port=8500
-        - traefik.protocol=http
+        - traefik.protocol=https
