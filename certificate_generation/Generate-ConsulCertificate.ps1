@@ -29,6 +29,7 @@ docker run `
 	--rm `
 	-v "$($intermediateWorkDir):/intermediate" `
 	-it frapsoft/openssl req -config /intermediate/ca/csr/consul.csr.cnf -new -sha256  `
+	-subj '/C=US/ST=Minnesota/L=Minneapolis/O=Hashcorp/OU=Vault/CN=Valut/emailAddress=no-reply@doesnotexist.com' `
 	-key /intermediate/ca/private/consul.key.pem `
 	-out /intermediate/ca/csr/consul.csr.pem
 
@@ -37,7 +38,7 @@ docker run `
 	--rm `
 	-v "$($intermediateWorkDir):/intermediate" `
 	-it frapsoft/openssl ca -config /intermediate/ca/openssl.cnf `
-	-extensions server_cert -days 375 -notext -md sha256 `
+	-batch -extensions server_cert -days 3650 -notext -md sha256 `
 	-in /intermediate/ca/csr/consul.csr.pem `
 	-out /intermediate/ca/certs/consul.cert.pem
 

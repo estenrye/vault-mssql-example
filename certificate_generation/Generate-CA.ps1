@@ -69,6 +69,7 @@ docker run `
 	--rm `
 	-v "$($rootWorkDir):/root" `
 	-it frapsoft/openssl req -config /root/ca/openssl.cnf `
+	-subj '/C=US/ST=Minnesota/L=Minneapolis/O=Generic CA/OU=Generic Root Certificate Authority/CN=Generic Root CA/emailAddress=no-reply@doesnotexist.com' `
 	-key /root/ca/private/ca.key.pem `
 	-new -x509 -days 7300 -sha256 -extensions v3_ca `
 	-out /root/ca/certs/ca.cert.pem
@@ -105,6 +106,7 @@ docker run `
 	--rm `
 	-v "$($intermediateWorkDir):/intermediate" `
 	-it frapsoft/openssl req -config /intermediate/ca/openssl.cnf -new -sha256 `
+	-subj '/C=US/ST=Minnesota/L=Minneapolis/O=Generic CA/OU=Generic Intermediate Certificate Authority/CN=Generic Intermediate CA/emailAddress=no-reply@doesnotexist.com' `
 	-key /intermediate/ca/private/intermediate.key.pem `
 	-out /intermediate/ca/csr/intermediate.csr.pem
 
@@ -114,7 +116,7 @@ docker run `
 	-v "$($rootWorkDir):/root" `
 	-v "$($intermediateWorkDir):/intermediate" `
 	-it frapsoft/openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca `
-	-days 3650 -notext -md sha256 `
+	-batch -days 3650 -notext -md sha256 `
 	-in /intermediate/ca/csr/intermediate.csr.pem `
 	-out /intermediate/ca/certs/intermediate.cert.pem
 
