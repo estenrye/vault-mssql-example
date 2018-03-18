@@ -1,3 +1,13 @@
+store_secret() {
+    SECRET_ID=$(docker secret ls --filter Name=$1 -q)
+    if [[ -z $SECRET_ID ]]; then
+        docker secret create $1 $2
+    else
+        docker secret rm $1
+        docker secret create $1 $2
+    fi
+}
+
 mkdir -p /ca/root/certs
 mkdir -p /ca/root/crl
 mkdir -p /ca/root/csr
@@ -43,6 +53,8 @@ openssl ca -config /ca/root/openssl.cnf -extensions v3_intermediate_ca \
 # Create the certificate chain file.
 cat /ca/intermediate/certs/intermediate.cert.pem | cat /ca/root/certs/ca.cert.pem > /out/ca-chain.cert.pem
 
+store_secret ca-chain.cert.pem /out/ca-chain.cert.pem
+
 # Generate a private key for Consul.
 openssl genrsa -out /ca/intermediate/private/consul.key.pem 2048
 
@@ -60,3 +72,6 @@ openssl ca -config /ca/intermediate/openssl.cnf \
 
 cp /ca/intermediate/private/consul.key.pem /out/consul/consul.key.pem
 cp /ca/intermediate/certs/consul.cert.pem /out/consul/consul.cert.pem
+
+store_secret consul.key.pem /out/consul/consul.key.pem
+store_secret consul.cert.pem /out/consul/consul.cert.pem
