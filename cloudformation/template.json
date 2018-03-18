@@ -1708,6 +1708,7 @@
                                 "docker run --label com.docker.editions.system --log-driver=json-file  --log-opt max-size=50m --name=meta-aws --restart=always -d -p $LOCAL_IP:9024:8080 -e AWS_REGION=$AWS_REGION -e MANAGER_SECURITY_GROUP_ID=$MANAGER_SECURITY_GROUP_ID -e WORKER_SECURITY_GROUP_ID=$WORKER_SECURITY_GROUP_ID -v /var/run/docker.sock:/var/run/docker.sock docker4x/meta-aws:$DOCKER_FOR_IAAS_VERSION metaserver -iaas_provider=aws\n",
                                 "docker run --label com.docker.editions.system --log-driver=json-file  --log-opt max-size=50m --name=l4controller-aws --restart=always -d -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/editions:/var/lib/docker/editions docker4x/l4controller-aws:$DOCKER_FOR_IAAS_VERSION run --log=4 --all=true\n",
                                 "mkdir -p /home/docker/consul\n",
+                                "mkdir -p /home/docker/consul/data\n",
                                 "docker run --rm -e REGION=$AWS_REGION -e MANAGER_COUNT=$MANAGER_COUNT -e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN -v /home/docker/consul:/out estenrye/aws-consul-swarm-config-writer:server\n"
                             ]
                         ]
@@ -2293,6 +2294,7 @@
                                 "docker plugin install --alias cloudstor:aws --grant-all-permissions docker4x/cloudstor:$DOCKER_FOR_IAAS_VERSION CLOUD_PLATFORM=AWS EFS_ID_REGULAR=$EFS_ID_REGULAR EFS_ID_MAXIO=$EFS_ID_MAXIO AWS_REGION=$AWS_REGION AWS_STACK_ID=$STACK_ID EFS_SUPPORTED=$ENABLE_EFS DEBUG=1\n",
                                 "# Worker user data\n",
                                 "mkdir -p /home/docker/consul\n",
+                                "mkdir -p /home/docker/consul/data\n",
                                 "docker run --rm -e REGION=$AWS_REGION -e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN -v /home/docker/consul:/out estenrye/aws-consul-swarm-config-writer:agent\n"
                             ]
                         ]
