@@ -12,6 +12,7 @@ Copy the ouptut into the `ConsulEncryptionToken` field of the stack template.
 
 Select an SSH Key and configure the remaining values as you please.
 
+
 # Local Setup
 ### Prerequisite values:
 Download Consul locally.  Run the following command locally to generate the Consul Encryption token:
@@ -44,4 +45,21 @@ docker run --rm \
 	-e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN \
 	-v /home/docker/consul/agent:/out \
 	estenrye/aws-consul-swarm-config-writer:agent
+```
+
+# Stack Deployment
+
+### Build the overlay network
+```sh
+docker network create -d overlay --subnet=192.168.0.0/16 default_net
+```
+
+### Deploy traefik
+```sh
+docker stack deploy -c ./traefik/traefik.stack.yml traefik
+```
+
+### Deploy consul
+```sh
+docker stack deploy -c ./consul/consul.stack.yml consul
 ```
