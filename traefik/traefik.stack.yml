@@ -5,7 +5,7 @@ networks:
     external: true
 services:
   proxy:
-    image: estenrye/traefik
+    image: estenrye/traefik:latest
     environment:
       - TLD=d.ryezone.com
     networks:

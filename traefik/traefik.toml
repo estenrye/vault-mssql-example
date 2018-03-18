@@ -7,14 +7,14 @@
 # Optional
 # Default: false
 #
-# debug = true
+debug = false
 
 # Log level
 #
 # Optional
 # Default: "ERROR"
 #
-logLevel = "DEBUG"
+logLevel = "ERROR"
 
 # Entrypoints to be used by frontends that do not specify any entrypoint.
 # Each frontend can specify its own entrypoints.
@@ -133,13 +133,6 @@ entryPoint = "traefik"
 # Enable Docker configuration backend
 [docker]
 
-# Docker server endpoint. Can be a tcp or a unix socket endpoint.
-#
-# Required
-# Default: "unix:///var/run/docker.sock"
-#
-# endpoint = "tcp://10.10.10.10:2375"
-
 # Default domain used.
 # Can be overridden by setting the "traefik.domain" label on a container.
 #
@@ -154,3 +147,17 @@ domain = "<<TLD>>"
 # Default: true
 #
 exposedbydefault = false
+
+# Use Docker Swarm Mode as data provider.
+#
+# Optional
+# Default: false
+#
+swarmmode = true
+
+# Enable watch docker changes.
+#
+# Optional
+# Default: true
+#
+watch = true
