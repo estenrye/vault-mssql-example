@@ -52,8 +52,8 @@ services:
     command: "consul agent -config-file /consul/config/config.json"
     # Mount the configuration and data volumes to the container.
     volumes:
-      - /opt/consul:/consul/config
-      - /opt/consul/data:/consul/data
+      - /home/docker/consul:/consul/config
+      - /home/docker/consul/data:/consul/data
     # Deploy the consul agent on all servers which are workers.
     # Use DNS Round Robin instead VIP for discovery.  
     deploy:
