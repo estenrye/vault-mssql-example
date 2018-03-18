@@ -1,0 +1,27 @@
+defaultEntryPoints = ["http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+
+# Enable Docker configuration backend.
+[docker]
+# Docker server endpoint. Can be a tcp or a unix socket endpoint.
+endpoint = "unix:///var/run/docker.sock"
+# Default domain used.
+# Can be overridden by setting the "traefik.domain" label on a container.
+domain = "<<TLD>>"
+# Enable watch docker changes.
+watch = true
+# Expose containers by default in Traefik.
+# If set to false, containers that don't have `traefik.enable=true` will be ignored.
+exposedbydefault = false
+# Use Swarm Mode services as data provider
+swarmmode = true
+
+# API definition
+[api]
+entryPoint = "http"
+
+# Enabled Dashboard
+dashboard = true

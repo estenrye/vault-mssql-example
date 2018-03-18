@@ -1,0 +1,21 @@
+---
+version: '3.4'
+networks:
+  default_net:
+    external: true
+services:
+  proxy:
+    image: estenrye/traefik
+    environment:
+      - TLD=d.ryezone.com
+    networks:
+      - default_net
+    ports:
+      - target: 80
+        published: 80
+        mode: ingress
+      - target: 8080
+        published: 8080
+        mode: ingress
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
