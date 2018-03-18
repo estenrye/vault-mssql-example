@@ -1,0 +1,79 @@
+---
+version: '3.3'
+networks:
+  default_net:
+    external: true
+services:
+  # Deploy the consul server instances
+  server:
+    image: consul:latest
+    networks:
+      default_net:
+        aliases:
+          - consul.server
+    # Start the consul server with the given configuration
+    command: "consul agent -config-file /consul/config/config.json"
+    # Mount the configuration and data volumes to the container.
+    volumes:
+      - /home/docker/consul:/consul/config
+      - /home/docker/consul/data:/consul/data
+    # Deploy the consul server on all servers which are managers.
+    # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
+    # consul server instances when querying consul.server
+    deploy:
+      mode: global
+      endpoint_mode: dnsrr
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 30s
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 120s
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.backend=consul.server
+        - traefik.docker.network=default_net
+        - traefik.frontend.rule=Host:consul-ui.d.ryezone.com
+        - traefik.enable=true
+        - traefik.port=8500
+        - traefik.protocol=http
+  # Deploy the consul agent instances
+  agent:
+    image: consul:latest
+    networks:
+      default_net:
+        aliases:
+          - consul.server
+     # Start the consul agent with the given configuration          
+    command: "consul agent -config-file /consul/config/config.json"
+    # Mount the configuration and data volumes to the container.
+    volumes:
+      - /opt/consul:/consul/config
+      - /opt/consul/data:/consul/data
+    # Deploy the consul agent on all servers which are workers.
+    # Use DNS Round Robin instead VIP for discovery.  
+    deploy:
+      mode: global
+      endpoint_mode: dnsrr
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 30s
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 120s
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - traefik.backend=consul.client
+        - traefik.docker.network=default_net
+        - traefik.frontend.rule=Host:consul-api.d.ryezone.com
+        - traefik.enable=true
+        - traefik.port=8500
+        - traefik.protocol=http
