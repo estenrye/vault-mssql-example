@@ -25,6 +25,10 @@ echo 1000 > /ca/root/crlnumber
 echo 1000 > /ca/intermediate/crlnumber
 mkdir -p /out/consul
 
+region=$(echo $REGION | sed 's/\//\\\//g')
+sed "s/<<REGION>>/$region/g" /ca/intermediate/csr/consul.csr.cnf.tmpl > /ca/intermediate/csr/consul.csr.cnf
+
+
 # Generate Root CA Private Key
 openssl genrsa -out /ca/root/private/ca.key.pem 4096
 
@@ -60,7 +64,7 @@ openssl genrsa -out /ca/intermediate/private/consul.key.pem 2048
 
 # Generate a CSR for Consul
 openssl req -config /ca/intermediate/csr/consul.csr.cnf -new -sha256  \
-	-subj '/C=US/ST=Minnesota/L=Minneapolis/O=Hashcorp/OU=Vault/CN=Valut/emailAddress=no-reply@doesnotexist.com' \
+	-subj "/C=US/ST=Minnesota/L=Minneapolis/O=Hashcorp/OU=consul/CN=server.$REGION.consul/emailAddress=no-reply@doesnotexist.com" \
 	-key /ca/intermediate/private/consul.key.pem \
 	-out /ca/intermediate/csr/consul.csr.pem
 

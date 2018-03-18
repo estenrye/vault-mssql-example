@@ -13,14 +13,14 @@ countryName_default             = US
 stateOrProvinceName_default     = Minnesota
 localityName_default            = Duluth
 0.organizationName_default      = Hashicorp
-organizationalUnitName_default  = Vault
+organizationalUnitName_default  = consul.<<REGION>>.server
 emailAddress_default            = vault@doesnotexist.com
 commonName_default              = consul
 
 [ req_ext ]
 subjectAltName = @alt_names
 [alt_names]
-DNS.1   = consul
-DNS.2   = consul1
-DNS.3   = consul2
-DNS.4   = consul3
+DNS.1   = consul.server
+DNS.2   = consul.<<REGION>>.server
+DNS.3   = consul-ui.d.ryezone.com
+DNS.4   = consul-api.d.ryezone.com
