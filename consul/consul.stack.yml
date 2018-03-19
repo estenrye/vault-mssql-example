@@ -68,7 +68,7 @@ services:
         - traefik.frontend.rule=Host:consul-ui.d.ryezone.com
         - traefik.enable=true
         - traefik.port=8500
-        - traefik.protocol=https
+        - traefik.protocol=http
   # Deploy the consul agent instances
   agent:
     image: consul:latest
@@ -116,4 +116,4 @@ services:
         - traefik.frontend.rule=Host:consul-api.d.ryezone.com
         - traefik.enable=true
         - traefik.port=8500
-        - traefik.protocol=https
+        - traefik.protocol=http

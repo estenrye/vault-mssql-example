@@ -21,30 +21,24 @@ consul keygen
 ```
 
 ### Write Consul Configuration
-On each manager node, run the following commands to write the consul server configuration:
+On a manager node, run the following commands to write the consul server configuration:
 ```sh
 export AWS_REGION='my-region-here'
 export MANAGER_COUNT=3
 export ENCRYPTION_TOKEN='generated-token-here'
+export TLD='top-level-domain-here'
 mkdir -p /home/docker/consul/server
-docker run --rm \
+docker run -it --rm \
     -e REGION=$AWS_REGION \
 	-e MANAGER_COUNT=$MANAGER_COUNT \
 	-e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN \
-	-v /home/docker/consul/server:/out \
-	estenrye/aws-consul-swarm-config-writer:server
-```
-
-On each worker node, run the following commands to write the consul agent configuration:
-```sh
-export AWS_REGION='my-region-here'
-export ENCRYPTION_TOKEN='generated-token-here'
-mkdir -p /home/docker/consul/agent
-docker run --rm \
-    -e REGION=$AWS_REGION \
-	-e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN \
-	-v /home/docker/consul/agent:/out \
-	estenrye/aws-consul-swarm-config-writer:agent
+	-e TLD=$TLD \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	estenrye/aws-consul-swarm-config-writer:latest
+docker run -it --rm \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-e TLD=d.ryezone.com \
+	estenrye/ca
 ```
 
 # Stack Deployment
