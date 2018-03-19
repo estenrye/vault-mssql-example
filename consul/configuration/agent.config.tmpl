@@ -8,7 +8,7 @@
   "retry_join" : [
     "consul.server"
   ],
-  "server_name" : "agent.<<REGION>>.consul",
+  "server_name" : "consul-api.<<TLD>>",
   "skip_leave_on_interrupt" : false,
   "server" : false,
   "ui" : false,
@@ -16,8 +16,8 @@
   "log_level": "warn",
   "encrypt": "<<ENCRYPTION_TOKEN>>",
 	"ports": {
-		"http":-1,
-    "https": 8500
+		"http": 8500,
+    "https": 8501
   },
   "key_file": "/run/secrets/consul.key.pem",
   "cert_file": "/run/secrets/consul.cert.pem",

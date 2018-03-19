@@ -12,7 +12,7 @@ secrets:
       name: consul.server.config.json
   ca:
     external:
-      name: ca-chain.cert.pem
+      name: ca.cert.pem
   cert:
     external:
       name: consul.cert.pem
