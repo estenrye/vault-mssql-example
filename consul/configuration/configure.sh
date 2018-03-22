@@ -8,6 +8,19 @@ store_secret() {
     fi
 }
 
+if [[ -z $REGION ]]; then
+    echo "REGION environment variable cannot be empty.  Aborting."
+    exit 1
+fi
+if [[ -z $MANAGER_COUNT ]]; then
+    echo "MANAGER_COUNT environment variable cannot be empty.  Aborting."
+    exit 1
+fi
+if [[ -z $ENCRYPTION_TOKEN ]]; then
+    echo "ENCRYPTION_TOKEN environment variable cannot be empty.  Aborting."
+    exit 1
+fi
+
 mkdir -p /out
 region=$(echo $REGION | sed 's/\//\\\//g')
 manager_count=$(echo $MANAGER_COUNT | sed 's/\//\\\//g')
