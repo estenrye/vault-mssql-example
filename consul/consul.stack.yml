@@ -10,15 +10,15 @@ secrets:
   server-config:
     external:
       name: consul.server.config.json
-  ca:
-    external:
-      name: ca.cert.pem
-  cert:
-    external:
-      name: consul.cert.pem
-  key:
-    external:
-      name: consul.key.pem
+  # ca:
+  #   external:
+  #     name: ca.cert.pem
+  # cert:
+  #   external:
+  #     name: consul.cert.pem
+  # key:
+  #   external:
+  #     name: consul.key.pem
   
 services:
   # Deploy the consul server instances
@@ -39,12 +39,12 @@ services:
     secrets:
       - source: server-config
         target: config.json
-      - source: ca
-        target: ca-chain.cert.pem
-      - source: cert
-        target: consul.cert.pem
-      - source: key
-        target: consul.key.pem
+      # - source: ca
+      #   target: ca-chain.cert.pem
+      # - source: cert
+      #   target: consul.cert.pem
+      # - source: key
+      #   target: consul.key.pem
     # Deploy the consul server on all servers which are managers.
     # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
     # consul server instances when querying consul.server
@@ -88,12 +88,12 @@ services:
     secrets:
       - source: agent-config
         target: config.json
-      - source: ca
-        target: ca-chain.cert.pem
-      - source: cert
-        target: consul.cert.pem
-      - source: key
-        target: consul.key.pem
+      # - source: ca
+      #   target: ca-chain.cert.pem
+      # - source: cert
+      #   target: consul.cert.pem
+      # - source: key
+      #   target: consul.key.pem
     # Deploy the consul agent on all servers which are workers.
     # Use DNS Round Robin instead VIP for discovery.  
     deploy:
