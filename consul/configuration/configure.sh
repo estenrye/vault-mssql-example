@@ -18,7 +18,7 @@ if [[ -z $master_token ]]; then
     master_token=$(uuidgen | sed 's/\//\\\//g')
 fi
 echo "Consul ACL Master Token: $master_token"
-echo "Consul ACL Agent Token: $agent_token"
+
 sed "s/<<REGION>>/$region/g" /app/server.config.tmpl |
 sed "s/<<MANAGER_COUNT>>/$manager_count/g" |
 sed "s/<<TLD>>/$top_level_domain/g" |
