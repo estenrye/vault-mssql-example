@@ -57,3 +57,10 @@ docker stack deploy -c ./traefik/traefik.stack.yml traefik
 ```sh
 docker stack deploy -c ./consul/consul.stack.yml consul
 ```
+
+### Generate 4 PGP public-private keys.
+The next step in deployment of vault is to generate the PGP public-private keyrings we will use to intialize vault.  Once you have generated the keyrings, export the public key for each keyring and upload each key to consul with the following keys:
+- /vaultautomation/publickey1
+- /vaultautomation/publickey2
+- /vaultautomation/publickey3
+- /vaultautomation/tokenkey
