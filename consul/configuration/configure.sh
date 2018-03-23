@@ -44,3 +44,13 @@ sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
 sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > /out/agent.config.json
 store_secret consul.agent.config.json /out/agent.config.json
+
+if [[ "$EMIT_CONFIG" == 1 ]]; then
+    echo ''; echo '';
+    echo 'server config'
+    cat /out/server.config.json
+    echo ''; echo '';
+    echo 'agent config'
+    cat /out/agent.config.json
+    echo ''; echo '';
+fi
