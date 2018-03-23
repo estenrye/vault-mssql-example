@@ -65,7 +65,7 @@ services:
       labels:
         - traefik.backend=consul.server
         - traefik.docker.network=default_net
-        - traefik.frontend.rule=Host:consul-ui.d.ryezone.com
+        - traefik.frontend.rule=Host:consul-ui.${TLD}
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http
@@ -113,7 +113,7 @@ services:
       labels:
         - traefik.backend=consul.client
         - traefik.docker.network=default_net
-        - traefik.frontend.rule=Host:consul-api.d.ryezone.com
+        - traefik.frontend.rule=Host:consul-api.${TLD}
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http

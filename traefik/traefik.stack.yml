@@ -7,7 +7,7 @@ services:
   proxy:
     image: estenrye/traefik:latest
     environment:
-      - TLD=d.ryezone.com
+      - TLD=${TLD}
     networks:
       - default_net
     ports:
