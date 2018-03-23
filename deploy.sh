@@ -12,7 +12,7 @@ docker run --rm \
 docker stack deploy -c ./consul/consul.stack.yml consul
 CONSUL_URI="http://consul-ui.$TLD"
 docker run --rm \
-    -e MASTER_TOKEN $MASTER_TOKEN \
+    -e MASTER_TOKEN=$MASTER_TOKEN \
 	-e CONSUL_URI=$CONSUL_URI \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	estenrye/consul-acl
