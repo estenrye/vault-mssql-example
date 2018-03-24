@@ -5,7 +5,7 @@ MASTER_TOKEN=$(uuidgen)
 REGION='us-east-2'
 MANAGER_COUNT=3
 ENCRYPTION_TOKEN='rp8BG/IebnT1lkKfp9hDyQ=='
-./consul/configuration/configure.sh
+/bin/sh ./consul/configuration/configure.sh
 docker stack deploy -c ./consul/consul.stack.yml consul
-./consul/acl/acl.sh
+/bin/sh ./consul/acl/acl.sh
 echo "Master Token: $MASTER_TOKEN"
