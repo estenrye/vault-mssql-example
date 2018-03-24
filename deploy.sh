@@ -4,7 +4,7 @@ docker stack deploy -c ./traefik/traefik.stack.yml traefik
 MASTER_TOKEN=$(uuidgen)
 REGION='us-east-2'
 MANAGER_COUNT=3
-ENCRYPTION_TOKEN=''
+ENCRYPTION_TOKEN='rp8BG/IebnT1lkKfp9hDyQ=='
 ./consul/configuration/configure.sh
 docker stack deploy -c ./consul/consul.stack.yml consul
 ./consul/acl/acl.sh
