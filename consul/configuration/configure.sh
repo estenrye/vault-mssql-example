@@ -21,7 +21,7 @@ if [[ -z $ENCRYPTION_TOKEN ]]; then
     exit 1
 fi
 
-mkdir -p /out
+mkdir -p ~/out
 region=$(echo $REGION | sed 's/\//\\\//g')
 manager_count=$(echo $MANAGER_COUNT | sed 's/\//\\\//g')
 top_level_domain=$(echo $TLD | sed 's/\//\\\//g')
@@ -36,21 +36,21 @@ sed "s/<<REGION>>/$region/g" /app/server.config.tmpl |
 sed "s/<<MANAGER_COUNT>>/$manager_count/g" |
 sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
-sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > /out/server.config.json
-store_secret consul.server.config.json /out/server.config.json
+sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > ~/out/server.config.json
+store_secret consul.server.config.json ~/out/server.config.json
 
 sed "s/<<REGION>>/$region/g" /app/agent.config.tmpl |
 sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
-sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > /out/agent.config.json
-store_secret consul.agent.config.json /out/agent.config.json
+sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > ~/out/agent.config.json
+store_secret consul.agent.config.json ~/out/agent.config.json
 
 if [[ "$EMIT_CONFIG" == 1 ]]; then
     echo ''; echo '';
     echo 'server config'
-    cat /out/server.config.json
+    cat ~/out/server.config.json
     echo ''; echo '';
     echo 'agent config'
-    cat /out/agent.config.json
+    cat ~/out/agent.config.json
     echo ''; echo '';
 fi
