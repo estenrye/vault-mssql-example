@@ -28,6 +28,11 @@ services:
       default_net:
         aliases:
           - consul.server
+    ports:
+      - target: 8500
+        published: 8500
+        protocol: tcp
+        mode: host
     # Start the consul server with the given configuration
     command: "consul agent -config-file /run/secrets/config.json"
     # Mount the data volumes to the container.
@@ -76,6 +81,11 @@ services:
       default_net:
         aliases:
           - consul.server
+    ports:
+      - target: 8500
+        published: 8500
+        protocol: tcp
+        mode: host
      # Start the consul agent with the given configuration          
     command: "consul agent -config-file /run/secrets/config.json"
     # Mount the configuration and data volumes to the container.
