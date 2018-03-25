@@ -31,7 +31,7 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 }'  http://localhost:8500/v1/acl/update
 
 # Create the acl configuration
-sed "s/<<ACL_TOKEN>>/$agentToken/g" $DIR/acl.json.tmpl > ~/out/acl.json
+sed "s/<<ACL_TOKEN>>/$agentToken/g" $DIR/consul/acl/acl.json.tmpl > ~/out/acl.json
 docker config create acl.json ~/out/acl.json
 
 # Load configuration into services

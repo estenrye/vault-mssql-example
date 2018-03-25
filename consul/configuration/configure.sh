@@ -34,14 +34,14 @@ if [[ -z $master_token ]]; then
 fi
 echo "Consul ACL Master Token: $master_token"
 
-sed "s/<<REGION>>/$region/g" $DIR/server.config.tmpl |
+sed "s/<<REGION>>/$region/g" $DIR/consul/configuration/server.config.tmpl |
 sed "s/<<MANAGER_COUNT>>/$manager_count/g" |
 sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
 sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > ~/out/server.config.json
 store_secret consul.server.config.json ~/out/server.config.json
 
-sed "s/<<REGION>>/$region/g" $DIR/agent.config.tmpl |
+sed "s/<<REGION>>/$region/g" $DIR/consul/configuration/agent.config.tmpl |
 sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
 sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > ~/out/agent.config.json
