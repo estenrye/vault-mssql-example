@@ -8,10 +8,10 @@ fi
 # Create Agent Token
 agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 '{
-  "Name": "Agent Token",
+  "Name": "Agent Token 2",
   "Type": "client",
   "Rules": "node \"\" { policy = \"write\" } service \"\" { policy = \"read\" }"
-}' http://localhost:8500/v1/acl/create)
+}' http://consul-ui.$TLD/v1/acl/create)
 
 # Extract Agent Token from the response.
 token=$(echo $agentToken | jq --raw-output ".ID")
@@ -20,7 +20,7 @@ token=$(echo $agentToken | jq --raw-output ".ID")
 curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 '{
   "Token": "fe3b8d40-0ee0-8783-6cc2-ab1aa9bb16c1"
-}' http://localhost:8500/v1/agent/token/acl_agent_token
+}' http://consul-ui.$TLD/v1/agent/token/acl_agent_token
 
 # Set the Anonymous Token Policy
 curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
@@ -28,7 +28,7 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
   "ID": "anonymous",
   "Type": "client",
   "Rules": "node \"\" { policy = \"read\" } service \"consul\" { policy = \"read\" } key \"\" { policy = \"deny\" }"
-}'  http://localhost:8500/v1/acl/update
+}'  http://consul-ui.$TLD/v1/acl/update
 
 # Create the acl configuration
 sed "s/<<ACL_TOKEN>>/$agentToken/g" $DIR/consul/acl/acl.json.tmpl > ~/out/acl.json

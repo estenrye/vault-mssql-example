@@ -19,7 +19,7 @@ secrets:
   # key:
   #   external:
   #     name: consul.key.pem
-  
+
 services:
   # Deploy the consul server instances
   server:
@@ -28,11 +28,11 @@ services:
       default_net:
         aliases:
           - consul.server
-    ports:
-      - target: 8500
-        published: 8500
-        protocol: tcp
-        mode: host
+    # ports:
+    #   - target: 8500
+    #     published: 8500
+    #     protocol: tcp
+    #     mode: host
     # Start the consul server with the given configuration
     command: "consul agent -config-file /run/secrets/config.json"
     # Mount the data volumes to the container.
@@ -81,12 +81,12 @@ services:
       default_net:
         aliases:
           - consul.server
-    ports:
-      - target: 8500
-        published: 8500
-        protocol: tcp
-        mode: host
-     # Start the consul agent with the given configuration          
+    # ports:
+    #   - target: 8500
+    #     published: 8500
+    #     protocol: tcp
+    #     mode: host
+     # Start the consul agent with the given configuration
     command: "consul agent -config-file /run/secrets/config.json"
     # Mount the configuration and data volumes to the container.
     # Mount the data volumes to the container.
@@ -105,7 +105,7 @@ services:
       # - source: key
       #   target: consul.key.pem
     # Deploy the consul agent on all servers which are workers.
-    # Use DNS Round Robin instead VIP for discovery.  
+    # Use DNS Round Robin instead VIP for discovery.
     deploy:
       mode: global
       endpoint_mode: dnsrr
