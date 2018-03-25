@@ -1,4 +1,7 @@
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Absolute path to this script, e.g. /home/user/bin/foo.sh
+SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in, thus /home/user/bin
+SCRIPTPATH=$(dirname "$SCRIPT")
 
 store_secret() {
     SECRET_ID=$(docker secret ls --filter Name=$1 -q)
@@ -34,14 +37,14 @@ if [[ -z $master_token ]]; then
 fi
 echo "Consul ACL Master Token: $master_token"
 
-sed "s/<<REGION>>/$region/g" $DIR/consul/configuration/server.config.tmpl |
+sed "s/<<REGION>>/$region/g" $SCRIPTPATH/server.config.tmpl |
 sed "s/<<MANAGER_COUNT>>/$manager_count/g" |
 sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
 sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > ~/out/server.config.json
 store_secret consul.server.config.json ~/out/server.config.json
 
-sed "s/<<REGION>>/$region/g" $DIR/consul/configuration/agent.config.tmpl |
+sed "s/<<REGION>>/$region/g" $SCRIPTPATH/agent.config.tmpl |
 sed "s/<<TLD>>/$top_level_domain/g" |
 sed "s/<<MASTER_TOKEN>>/$master_token/g" |
 sed "s/<<ENCRYPTION_TOKEN>>/$encryption_token/g" > ~/out/agent.config.json

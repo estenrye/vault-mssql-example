@@ -8,5 +8,5 @@ docker stack deploy -c ./traefik/traefik.stack.yml traefik
 
 /bin/sh ./consul/configuration/configure.sh
 docker stack deploy -c ./consul/consul.stack.yml consul
-/bin/sh ./consul/acl/acl.sh
+/bin/sh ./consul/acl/acl.sh $MASTER_TOKEN $TLD
 echo "Master Token: $MASTER_TOKEN"
