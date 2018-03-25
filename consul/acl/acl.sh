@@ -26,9 +26,10 @@ until $(curl --output /dev/null --silent --fail http://consul-ui.d.ryezone.com/v
 done
 
 # Create Agent Token
+echo 'Creating Agent Token'
 agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 '{
-  "Name": "Agent Token",
+  "Name": "ACL Agent Token",
   "Type": "client",
   "Rules": "node \"\" { policy = \"write\" } service \"\" { policy = \"read\" }"
 }' http://consul-ui.$TLD/v1/acl/create)
@@ -39,12 +40,14 @@ echo $agentToken
 token=$(echo $agentToken | jq --raw-output ".ID")
 
 # Set the Agent Token
+echo "Setting ACL Agent Token: $token"
 curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
-'{
-  "Token": "fe3b8d40-0ee0-8783-6cc2-ab1aa9bb16c1"
-}' http://consul-ui.$TLD/v1/agent/token/acl_agent_token
+"{
+  \"Token\": \"$token\"
+}" http://consul-ui.$TLD/v1/agent/token/acl_agent_token
 
 # Set the Anonymous Token Policy
+echo "Setting Anonymous Token Policy"
 curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 '{
   "ID": "anonymous",
@@ -53,6 +56,7 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 }'  http://consul-ui.$TLD/v1/acl/update
 
 # Create the acl configuration
+echo "Writing ACL Config file."
 sed "s/<<ACL_TOKEN>>/$agentToken/g" $SCRIPTPATH/acl.json.tmpl > ~/out/acl.json
 docker config create acl.json ~/out/acl.json
 
