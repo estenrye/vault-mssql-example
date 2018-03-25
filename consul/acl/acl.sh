@@ -1,3 +1,5 @@
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 if [[ -z $MASTER_TOKEN ]]; then
     echo "MASTER_TOKEN environment variable cannot be empty.  Aborting."
     exit 1
@@ -29,8 +31,8 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 }'  http://localhost:8500/v1/acl/update
 
 # Create the acl configuration
-sed "s/<<ACL_TOKEN>>/$agentToken/g" /app/acl.json.tmpl > acl.json
-docker config create acl.json acl.json
+sed "s/<<ACL_TOKEN>>/$agentToken/g" $DIR/acl.json.tmpl > ~/out/acl.json
+docker config create acl.json ~/out/acl.json
 
 # Load configuration into services
 docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_server
