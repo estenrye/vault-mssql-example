@@ -15,6 +15,6 @@ openssl x509 -noout -text -in /opt/consul/ssl/server.cer
 
 ls
 
-# store_secret ca.cert.pem ca.cert
-# store_secret consul.cert.pem consul.cert
-# store_secret consul.key.pem consul.key
+store_secret demo-root.cer ca.cert
+store_secret server.cer consul.cert
+store_secret server.key consul.key
