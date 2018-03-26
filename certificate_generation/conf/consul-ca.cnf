@@ -3,7 +3,7 @@ default_ca = demo
 
 [ crl_ext ]
 # issuerAltName=issuer:copy  #this would copy the issuer name to altname
-authorityKeyIdentifier=keyid:always
+# authorityKeyIdentifier=keyid:always
 
 [ demo ]
 new_certs_dir = /tmp
@@ -28,7 +28,7 @@ organizationalUnitName = optional
 [ demo_extensions ]
 basicConstraints = CA:false
 subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid:always
+# authorityKeyIdentifier = keyid:always
 keyUsage = digitalSignature,keyEncipherment
 extendedKeyUsage = serverAuth,clientAuth
 crlDistributionPoints = URI:http://path.to.crl/demo.crl
