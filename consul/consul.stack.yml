@@ -74,9 +74,8 @@ services:
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http
-        - traefik.secure.frontend.backend=secure.consul.server
         - traefik.secure.frontend.rule=Host:consul-ui-s.${TLD}
-        - traefik.secure.frontend.port=8501
+        - traefik.secure.port=8501
         - traefik.secure.frontend.protocol=https
   # Deploy the consul agent instances
   agent:
