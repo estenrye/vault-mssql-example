@@ -33,10 +33,67 @@ logLevel = "ERROR"
 # Optional
 # Default:
 [entryPoints]
-    [entryPoints.http]
-    address = ":80"
-    [entryPoints.traefik]
-    address = ":8080"
+  [entryPoints.http]
+  address = ":80"
+#    [entryPoints.http.redirect]
+#    entryPoint = "https"
+#  [entryPoints.https]
+#  address = ":443"
+#    [entryPoints.https.tls]
+  [entryPoints.traefik]
+  address = ":8080"
+
+################################################################
+# Consul KV configuration backend
+################################################################
+
+# Enable Consul KV configuration backend.
+[consul]
+
+# Consul server endpoint.
+#
+# Required
+# Default: "127.0.0.1:8500"
+#
+endpoint = "http://consul.server:8500"
+
+# Enable watch Consul changes.
+#
+# Optional
+# Default: true
+#
+watch = true
+
+# Prefix used for KV store.
+#
+# Optional
+# Default: traefik
+#
+prefix = "traefik"
+
+# Override default configuration template.
+# For advanced users :)
+#
+# Optional
+#
+# filename = "consul.tmpl"
+
+# Use Consul user/pass authentication.
+#
+# Optional
+#
+# username = foo
+# password = bar
+
+# Enable Consul TLS connection.
+#
+# Optional
+#
+#    [consul.tls]
+#    ca = "/etc/ssl/ca.crt"
+#    cert = "/etc/ssl/consul.crt"
+#    key = "/etc/ssl/consul.key"
+#    insecureskipverify = true
 
 ################################################################
 # Traefik logs configuration

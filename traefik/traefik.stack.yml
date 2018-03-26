@@ -8,6 +8,7 @@ services:
     image: estenrye/traefik:latest
     environment:
       - TLD=${TLD}
+      - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
     networks:
       - default_net
     ports:
