@@ -12,14 +12,14 @@ secrets:
       name: consul.server.config.json
   # ca:
   #   external:
-  #     name: ca.cert.pem
+  #     name: ca.cert
   # cert:
   #   external:
-  #     name: consul.cert.pem
+  #     name: consul.cert
   # key:
   #   external:
-  #     name: consul.key.pem
-  
+  #     name: consul.key
+
 services:
   # Deploy the consul server instances
   server:
@@ -28,6 +28,11 @@ services:
       default_net:
         aliases:
           - consul.server
+    # ports:
+    #   - target: 8500
+    #     published: 8500
+    #     protocol: tcp
+    #     mode: host
     # Start the consul server with the given configuration
     command: "consul agent -config-file /run/secrets/config.json"
     # Mount the data volumes to the container.
@@ -40,11 +45,11 @@ services:
       - source: server-config
         target: config.json
       # - source: ca
-      #   target: ca-chain.cert.pem
+      #   target: ca.cert
       # - source: cert
-      #   target: consul.cert.pem
+      #   target: consul.cert
       # - source: key
-      #   target: consul.key.pem
+      #   target: consul.key
     # Deploy the consul server on all servers which are managers.
     # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
     # consul server instances when querying consul.server
@@ -65,10 +70,13 @@ services:
       labels:
         - traefik.backend=consul.server
         - traefik.docker.network=default_net
-        - traefik.frontend.rule=Host:consul-ui.d.ryezone.com
+        - traefik.frontend.rule=Host:consul-ui.${TLD}
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http
+        # - traefik.secure.frontend.rule=Host:consul-ui-s.${TLD}
+        # - traefik.secure.port=8501
+        # - traefik.secure.frontend.protocol=https
   # Deploy the consul agent instances
   agent:
     image: consul:latest
@@ -76,7 +84,12 @@ services:
       default_net:
         aliases:
           - consul.server
-     # Start the consul agent with the given configuration          
+    # ports:
+    #   - target: 8500
+    #     published: 8500
+    #     protocol: tcp
+    #     mode: host
+     # Start the consul agent with the given configuration
     command: "consul agent -config-file /run/secrets/config.json"
     # Mount the configuration and data volumes to the container.
     # Mount the data volumes to the container.
@@ -89,13 +102,13 @@ services:
       - source: agent-config
         target: config.json
       # - source: ca
-      #   target: ca-chain.cert.pem
+      #   target: ca.cert
       # - source: cert
-      #   target: consul.cert.pem
+      #   target: consul.cert
       # - source: key
-      #   target: consul.key.pem
+      #   target: consul.key
     # Deploy the consul agent on all servers which are workers.
-    # Use DNS Round Robin instead VIP for discovery.  
+    # Use DNS Round Robin instead VIP for discovery.
     deploy:
       mode: global
       endpoint_mode: dnsrr
@@ -113,7 +126,7 @@ services:
       labels:
         - traefik.backend=consul.client
         - traefik.docker.network=default_net
-        - traefik.frontend.rule=Host:consul-api.d.ryezone.com
+        - traefik.frontend.rule=Host:consul-api.${TLD}
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http

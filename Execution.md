@@ -11,37 +11,20 @@ consul keygen
 Copy the ouptut into the `ConsulEncryptionToken` field of the stack template.
 
 Select an SSH Key and configure the remaining values as you please.
+Select a subdomain and hosted zone for the wildcard dns that will be created.
 
-
-# Local Setup
-### Prerequisite values:
-Download Consul locally.  Run the following command locally to generate the Consul Encryption token:
-```sh
-consul keygen
-```
 
 ### Write Consul Configuration
-On a manager node, run the following commands to write the consul server configuration:
+On a manager node, run the following commands to write the consul server configuration.  These commands will also output a Consul ACL Master Token if no `MASTER_TOKEN` environment variable is specified.  The Master Token value is used to configure the Consul ACLs.
 ```sh
-export AWS_REGION='my-region-here'
+export REGION='my-region-here'
 export MANAGER_COUNT=3
 export ENCRYPTION_TOKEN='generated-token-here'
+export MASTER_TOKEN='my-Master-Token'
 export TLD='top-level-domain-here'
-mkdir -p /home/docker/consul/server
-docker run -it --rm \
-    -e REGION=$AWS_REGION \
-	-e MANAGER_COUNT=$MANAGER_COUNT \
-	-e ENCRYPTION_TOKEN=$ENCRYPTION_TOKEN \
-	-e TLD=$TLD \
-	-v /var/run/docker.sock:/var/run/docker.sock \
-	estenrye/aws-consul-swarm-config-writer:latest
-docker run -it --rm \
-	-v /var/run/docker.sock:/var/run/docker.sock \
-	-e TLD=d.ryezone.com \
-	estenrye/ca
+docker run --rm -it -e REGION=$REGION -e TLD=$TLD -v /var/run/docker.sock:/var/run/docker.sock estenrye/generate-certs
+/bin/sh ./consul/configuration/configure.sh
 ```
-
-# Stack Deployment
 
 ### Build the overlay network
 ```sh
@@ -56,4 +39,11 @@ docker stack deploy -c ./traefik/traefik.stack.yml traefik
 ### Deploy consul
 ```sh
 docker stack deploy -c ./consul/consul.stack.yml consul
+```
+
+### Configure ACLs on consul
+```sh
+export MASTER_TOKEN='my-Master-Token'
+export TLD='top-level-domain-here.io'
+/bin/sh ./consul/acl/acl.sh $MASTER_TOKEN $TLD
 ```
