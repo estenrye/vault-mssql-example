@@ -14,7 +14,4 @@ RUN touch /opt/consul/ssl/certindex && \
 WORKDIR /opt/consul/ssl
 
 COPY generateCerts.sh /generateCerts.sh
-# COPY conf/openssl_root.cnf /ca/root/openssl.cnf
-# COPY conf/openssl_intermediate.cnf /ca/intermediate/openssl.cnf
-# COPY conf/openssl_consul.cnf /ca/intermediate/csr/consul.csr.cnf.tmpl
 ENTRYPOINT ["/bin/sh", "/generateCerts.sh"]

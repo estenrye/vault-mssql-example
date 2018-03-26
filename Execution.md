@@ -17,11 +17,12 @@ Select a subdomain and hosted zone for the wildcard dns that will be created.
 ### Write Consul Configuration
 On a manager node, run the following commands to write the consul server configuration.  These commands will also output a Consul ACL Master Token if no `MASTER_TOKEN` environment variable is specified.  The Master Token value is used to configure the Consul ACLs.
 ```sh
-export AWS_REGION='my-region-here'
+export REGION='my-region-here'
 export MANAGER_COUNT=3
 export ENCRYPTION_TOKEN='generated-token-here'
 export MASTER_TOKEN='my-Master-Token'
 export TLD='top-level-domain-here'
+docker run --rm -it -e REGION=$REGION -e TLD=$TLD -v /var/run/docker.sock:/var/run/docker.sock estenrye/generate-certs
 /bin/sh ./consul/configuration/configure.sh
 ```
 
