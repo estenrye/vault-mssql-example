@@ -1,19 +1,23 @@
 [ ca ]
-default_ca = myca
+default_ca = demo
 
-[ myca ]
+[ crl_ext ]
+# issuerAltName=issuer:copy  #this would copy the issuer name to altname
+authorityKeyIdentifier=keyid:always
+
+[ demo ]
+new_certs_dir = /tmp
 unique_subject = no
-new_certs_dir = .
-certificate = ca.cert
-database = certindex
-private_key = privkey.pem
-serial = serial
-default_days = 3650
+certificate = /opt/consul/ssl/demo-root.cer
+database = /opt/consul/ssl/certindex
+private_key = /opt/consul/ssl/privkey.pem
+serial = /opt/consul/ssl/serial
+default_days = 365
 default_md = sha1
-policy = myca_policy
-x509_extensions = myca_extensions
+policy = demo_policy
+x509_extensions = demo_extensions
 
-[ myca_policy ]
+[ demo_policy ]
 commonName = supplied
 stateOrProvinceName = supplied
 countryName = supplied
@@ -21,8 +25,10 @@ emailAddress = optional
 organizationName = supplied
 organizationalUnitName = optional
 
-[ myca_extensions ]
+[ demo_extensions ]
 basicConstraints = CA:false
 subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always
 keyUsage = digitalSignature,keyEncipherment
 extendedKeyUsage = serverAuth,clientAuth
+crlDistributionPoints = URI:http://path.to.crl/demo.crl
