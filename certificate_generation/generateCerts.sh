@@ -9,7 +9,7 @@ store_secret() {
 }
 
 openssl req -x509 -subj '/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=ConsulCA' -newkey rsa:2048 -days 3650 -nodes -out /opt/consul/ssl/demo-root.cer -keyout /opt/consul/ssl/private.pem
-openssl req -subj "/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=server.us-east-2.consul" -newkey rsa:1024 -nodes -out /opt/consul/ssl/server.csr -keyout /opt/consul/ssl/server.key
+openssl req -subj "/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=server.$REGION.consul" -newkey rsa:1024 -nodes -out /opt/consul/ssl/server.csr -keyout /opt/consul/ssl/server.key
 openssl ca -batch -config /opt/consul/ssl/demo.conf -notext -in /opt/consul/ssl/server.csr -out /opt/consul/ssl/server.cer
 openssl x509 -noout -text -in /opt/consul/ssl/server.cer
 
