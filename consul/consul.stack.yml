@@ -10,15 +10,15 @@ secrets:
   server-config:
     external:
       name: consul.server.config.json
-  ca:
-    external:
-      name: ca.cert
-  cert:
-    external:
-      name: consul.cert
-  key:
-    external:
-      name: consul.key
+  # ca:
+  #   external:
+  #     name: ca.cert
+  # cert:
+  #   external:
+  #     name: consul.cert
+  # key:
+  #   external:
+  #     name: consul.key
 
 services:
   # Deploy the consul server instances
@@ -44,12 +44,12 @@ services:
     secrets:
       - source: server-config
         target: config.json
-      - source: ca
-        target: ca.cert
-      - source: cert
-        target: consul.cert
-      - source: key
-        target: consul.key
+      # - source: ca
+      #   target: ca.cert
+      # - source: cert
+      #   target: consul.cert
+      # - source: key
+      #   target: consul.key
     # Deploy the consul server on all servers which are managers.
     # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
     # consul server instances when querying consul.server
@@ -74,9 +74,9 @@ services:
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http
-        - traefik.secure.frontend.rule=Host:consul-ui-s.${TLD}
-        - traefik.secure.port=8501
-        - traefik.secure.frontend.protocol=https
+        # - traefik.secure.frontend.rule=Host:consul-ui-s.${TLD}
+        # - traefik.secure.port=8501
+        # - traefik.secure.frontend.protocol=https
   # Deploy the consul agent instances
   agent:
     image: consul:latest
@@ -101,12 +101,12 @@ services:
     secrets:
       - source: agent-config
         target: config.json
-      - source: ca
-        target: ca.cert
-      - source: cert
-        target: consul.cert
-      - source: key
-        target: consul.key
+      # - source: ca
+      #   target: ca.cert
+      # - source: cert
+      #   target: consul.cert
+      # - source: key
+      #   target: consul.key
     # Deploy the consul agent on all servers which are workers.
     # Use DNS Round Robin instead VIP for discovery.
     deploy:
