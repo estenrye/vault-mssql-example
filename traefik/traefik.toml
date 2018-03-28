@@ -22,7 +22,7 @@ logLevel = "ERROR"
 # Optional
 # Default: ["http"]
 #
-# defaultEntryPoints = ["http", "https"]
+defaultEntryPoints = ["http", "https"]
 
 ################################################################
 # Entrypoints configuration
@@ -35,11 +35,11 @@ logLevel = "ERROR"
 [entryPoints]
   [entryPoints.http]
   address = ":80"
-#    [entryPoints.http.redirect]
-#    entryPoint = "https"
-#  [entryPoints.https]
-#  address = ":443"
-#    [entryPoints.https.tls]
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
   [entryPoints.traefik]
   address = ":8080"
 
@@ -218,3 +218,11 @@ swarmmode = true
 # Default: true
 #
 watch = true
+
+[acme]
+email = "<<EMAIL>>"
+storage = "traefik/acme/account"
+entryPoint = "https"
+OnHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
