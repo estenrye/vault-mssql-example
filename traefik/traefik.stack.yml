@@ -5,7 +5,7 @@ networks:
     external: true
 services:
   proxy_init:
-    image: traefik:1.6.0-rc3-alpine
+    image: traefik:1.6.0-rc3
     environment: 
       - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
     command:
@@ -40,7 +40,7 @@ services:
     networks:
       - default_net
   proxy:
-    image: traefik:1.6.0-rc3-alpine
+    image: traefik:1.6.0-rc3
     command:
       - "--consul"
       - "--consul.endpoint=consul.server:8500"
