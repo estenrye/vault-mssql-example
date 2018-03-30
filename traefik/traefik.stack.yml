@@ -34,6 +34,11 @@ services:
     deploy:
       restart_policy:
         condition: on-failure  
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - default_net
   proxy:
     image: traefik:1.6.0-rc3-alpine
     command:
