@@ -4,15 +4,58 @@ networks:
   default_net:
     external: true
 services:
+  proxy_init:
+    image: traefik:1.6.0-rc3
+    environment: 
+      - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
+    command:
+      - "storeconfig"
+      - "--debug=false"
+      - "--loglevel=ERROR"
+      - "--api"
+      - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
+      - "--entrypoints=Name:https Address::443 TLS"
+      - "--defaultentrypoints=http,https"
+      - "--acme"
+      - "--acme.storage=traefik/acme/account"
+      - "--acme.entryPoint=https"
+      - "--acme.httpChallenge.entryPoint=http"
+      - "--acme.OnHostRule=true"
+      - "--acme.onDemand=false"
+      - "--acme.email=${EMAIL}"
+      - "--docker"
+      - "--docker.swarmmode=true"
+      - "--docker.domain=${TLD}"
+      - "--docker.exposedbydefault=false"
+      - "--docker.watch=true"
+      - "--consul"
+      - "--consul.endpoint=consul.server:8500"
+      - "--consul.prefix=traefik"
+    deploy:
+      restart_policy:
+        condition: on-failure  
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - default_net
   proxy:
-    image: estenrye/traefik:latest
+    image: traefik:1.6.0-rc3
+    command:
+      - "--consul"
+      - "--consul.endpoint=consul.server:8500"
+      - "--consul.prefix=traefik"
+      - "--consul.watch=true"
     environment:
-      - TLD=${TLD}
+      - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
     networks:
       - default_net
     ports:
       - target: 80
         published: 80
+        mode: ingress
+      - target: 443
+        published: 443
         mode: ingress
       - target: 8080
         published: 8080
