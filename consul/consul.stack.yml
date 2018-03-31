@@ -24,7 +24,7 @@ services:
             "autopilot": {
               "cleanup_dead_servers": true
             },
-            "disable_update_check": true,
+            "disable_update_check": true
           }'
     command: 
       - "agent"
@@ -86,7 +86,7 @@ services:
             "leave_on_terminate" : true,
             "server_name" : "agent.${REGION}.consul",
             "skip_leave_on_interrupt" : false,
-            "disable_update_check": true,
+            "disable_update_check": true
           }'
     command: 
       - "agent"
