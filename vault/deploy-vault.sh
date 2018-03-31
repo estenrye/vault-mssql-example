@@ -9,7 +9,7 @@ cp $SCRIPTPATH/vault.hcl /home/docker/vault/vault.hcl
 
 docker run -d --name vault \
     --network default_net \
-    --restart-always \
+    --restart always \
     -e 'VAULT_REDIRECT_INTERFACE=eth0' \
     -e "VAULT_CLUSTER_ADDR=vault.$TLD" \
     -v /home/docker/vault:/config \
