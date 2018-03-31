@@ -14,6 +14,8 @@ services:
           - consul.server
     environment:
       - 'CONSUL_LOCAL_CONFIG={
+            "advertise_addr":"{{ GetInterfaceIP \"eth0\" }}",
+            "bind_addr":"{{ GetInterfaceIP \"eth0\" }}",
             "acl_datacenter":"${REGION}",
             "acl_master_token":"${MASTER_TOKEN}",
             "acl_default_policy": "deny",
@@ -28,8 +30,6 @@ services:
           }'
     command: 
       - "agent"
-      - "-advertise {{ GetInterfaceIP \"eth0\" }}"
-      - "-bind {{ GetInterfaceIP \"eth0\" }}"
       - "-bootstrap-expect ${MANAGER_COUNT}"
       - "-client 0.0.0.0"
       - "-data-dir /consul/data"
@@ -84,6 +84,8 @@ services:
      # Start the consul agent with the given configuration
     environment:
       - 'CONSUL_LOCAL_CONFIG={
+            "advertise_addr":"{{ GetInterfaceIP \"eth0\" }}",
+            "bind_addr":"{{ GetInterfaceIP \"eth0\" }}",
             "acl_datacenter":"${REGION}",
             "leave_on_terminate" : true,
             "server_name" : "agent.${REGION}.consul",
@@ -92,8 +94,6 @@ services:
           }'
     command: 
       - "agent"
-      - "-advertise {{ GetInterfaceIP \"eth0\" }}"
-      - "-bind {{ GetInterfaceIP \"eth0\" }}"
       - "-bootstrap-expect ${MANAGER_COUNT}"
       - "-client 0.0.0.0"
       - "-data-dir /consul/data"
