@@ -29,6 +29,8 @@ services:
     command: 
       - "agent"
       - "-server"
+      - "-advertise='{{ GetInterfaceIP \"eth0\" }}'"
+      - "-bind='{{ GetInterfaceIP \"eth0\" }}'"
       - "-bootstrap-expect=${MANAGER_COUNT}"
       - "-client=0.0.0.0"
       - "-data-dir=/consul/data"
@@ -91,6 +93,8 @@ services:
     command: 
       - "agent"
       - "-client=0.0.0.0"
+      - "-advertise='{{ GetInterfaceIP \"eth0\" }}'"
+      - "-bind='{{ GetInterfaceIP \"eth0\" }}'"
       - "-data-dir=/consul/data"
       - "-datacenter=${REGION}"
       - "-encrypt='${ENCRYPTION_TOKEN}''"
