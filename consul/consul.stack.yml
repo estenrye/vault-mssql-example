@@ -40,11 +40,6 @@ services:
       - "-retry-join=consul.server"
       - "-log-level=info"
       - "-ui"
-    ports:
-      - target: 8500
-        published: 8500
-        protocol: tcp
-        mode: host
     # Mount the data volumes to the container.
     volumes:
       - type: bind
