@@ -11,14 +11,6 @@ if [[ -z $MASTER_TOKEN ]]; then
         export MASTER_TOKEN=$1
     fi
 fi
-if [[ -z $TLD ]]; then
-    if [[ -z $2 ]]; then
-        echo "TLD environment variable cannot be empty.  Aborting."
-        exit 1
-    else
-        export TLD=$2
-    fi
-fi
 
 until $(curl --output /dev/null --silent --fail http://consul-ui.d.ryezone.com/v1/health/service/consul --header "X-Consul-Token: $MASTER_TOKEN" | jq '.'); do
     echo 'Waiting for successful connection to consul.'
@@ -32,7 +24,7 @@ agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data 
   "Name": "ACL Agent Token",
   "Type": "client",
   "Rules": "node \"\" { policy = \"write\" } service \"\" { policy = \"read\" }"
-}' http://consul-ui.$TLD/v1/acl/create)
+}' http://consul.server:8500/v1/acl/create)
 
 echo $agentToken
 
@@ -44,7 +36,7 @@ echo "Setting ACL Agent Token: $token"
 curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 "{
   \"Token\": \"$token\"
-}" https://consul-ui.$TLD/v1/agent/token/acl_agent_token
+}" https://consul.server:8500/v1/agent/token/acl_agent_token
 
 # Set the Anonymous Token Policy
 echo "Setting Anonymous Token Policy"
@@ -53,7 +45,7 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
   "ID": "anonymous",
   "Type": "client",
   "Rules": "node \"\" { policy = \"read\" } service \"consul\" { policy = \"read\" } key \"\" { policy = \"deny\" }"
-}'  https://consul-ui.$TLD/v1/acl/update
+}'  https://consul.server:8500/v1/acl/update
 
 
 # Create the acl configuration
@@ -72,7 +64,7 @@ agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data 
   "Name": "Traefik",
   "Type": "client",
   "Rules": "session \"\" { policy = \"write\" } key \"traefik\" { policy = \"write\" }"
-}' -k -v http://consul-ui.$TLD/v1/acl/create)
+}' -k -v http://consul.server:8500/v1/acl/create)
 
 token=$(echo $agentToken | jq --raw-output ".ID")
 echo "Traefik Token: $token"
