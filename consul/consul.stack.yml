@@ -40,7 +40,7 @@ services:
       - "-log-level info"
       - "-server"
       - "-ui"
-    # ports:
+    ports:
       - target: 8500
         published: 8500
         protocol: tcp
