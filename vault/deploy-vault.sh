@@ -11,7 +11,7 @@ docker run -d --name vault \
     --network default_net \
     --restart always \
     -e 'VAULT_REDIRECT_INTERFACE=eth0' \
-    -e "VAULT_CLUSTER_ADDR=vault.$TLD" \
+    -e "VAULT_CLUSTER_ADDR=https://vault.$TLD" \
     -v /home/docker/vault:/config \
     --label "traefik.backend=vault.server" \
     --label "traefik.docker.network=default_net" \
