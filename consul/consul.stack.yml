@@ -28,6 +28,7 @@ services:
           }'
     command: 
       - "agent"
+      - "-server"
       - "-bootstrap-expect ${MANAGER_COUNT}"
       - "-client 0.0.0.0"
       - "-data-dir /consul/data"
@@ -36,7 +37,6 @@ services:
       - "-http-port 8500"
       - "-retry-join consul.server"
       - "-log-level info"
-      - "-server"
       - "-ui"
     ports:
       - target: 8500
@@ -90,7 +90,6 @@ services:
           }'
     command: 
       - "agent"
-      - "-bootstrap-expect ${MANAGER_COUNT}"
       - "-client 0.0.0.0"
       - "-data-dir /consul/data"
       - "-datacenter ${REGION}"
