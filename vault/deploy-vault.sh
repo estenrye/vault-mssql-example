@@ -5,7 +5,7 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 mkdir -p /home/docker/vault
-cp $SCRIPTPATH/vault.hcl /home/docker/vault/vault.hcl
+sed "s/<<ACL_TOKEN>>/$VAULT_CONSUL_TOKEN/g" $SCRIPTPATH/vault.hcl > /home/docker/vault/vault.hcl
 
 docker run -d --name vault \
     --network default_net \

@@ -58,13 +58,26 @@ docker service update --config-add source=acl.json,target=/consul/config/acl.jso
 docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_agent
 
 
-echo 'Creating Agent Token'
+echo 'Creating Traefik Token'
 agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 '{
   "Name": "Traefik",
   "Type": "client",
   "Rules": "session \"\" { policy = \"write\" } key \"traefik\" { policy = \"write\" }"
-}' -k -v http://consul.server:8500/v1/acl/create)
+}' http://consul.server:8500/v1/acl/create)
 
-token=$(echo $agentToken | jq --raw-output ".ID")
-echo "Traefik Token: $token"
+traefikToken=$(echo $agentToken | jq --raw-output ".ID")
+
+
+echo 'Creating Vault Token'
+agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
+'{
+  "Name": "Vault",
+  "Type": "client",
+  "Rules": "{\"key\": {\"vault/\": {\"policy\":\"write\"}},  \"node\": {\"\": {\"policy\": \"write\"}},\"service\": { \"vault\": {\"policy\": \"write\"}},\"agent\": {\"\": {\"policy\": \"write\"}},\"session\": {\"\": {\"policy\": \"write\"}}}"
+}' http://consul.server:8500/v1/acl/create)
+
+vaultToken=$(echo $agentToken | jq --raw-output ".ID")
+
+echo "Traefik ACL Token: export TRAEFIK_CONSUL_TOKEN='$traefikToken'"
+echo "Vault ACL Token: export VAULT_CONSUL_TOKEN='$vaultToken'"
