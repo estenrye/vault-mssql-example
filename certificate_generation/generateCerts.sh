@@ -8,17 +8,13 @@ store_secret() {
     fi
 }
 
-mkdir /etc/consul.d/ssl
-mkdir /etc/consul.d/ssl/CA
-chmod 0700 /etc/consul.d/ssl/CA
-cd /etc/consul.d/ssl/CA
-echo "000a" > serial
-touch certindex
+openssl req -x509 -subj '/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=ConsulCA' -newkey rsa:2048 -days 3650 -nodes -out /opt/consul/ssl/demo-root.cer -keyout /opt/consul/ssl/private.pem
+openssl req -subj "/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=server.$REGION.consul" -newkey rsa:1024 -nodes -out /opt/consul/ssl/server.csr -keyout /opt/consul/ssl/server.key
+openssl ca -batch -config /opt/consul/ssl/demo.conf -notext -in /opt/consul/ssl/server.csr -out /opt/consul/ssl/server.cer
+openssl x509 -noout -text -in /opt/consul/ssl/server.cer
 
-openssl req -x509 -subj '/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=ConsulCA/emailAddress=admin@dev.null.com' -newkey rsa:2048 -days 3650 -nodes -out ca.cert -keyout privkey.pem
-openssl req -subj "/C=US/ST=MN/L=Minneapolis/O=ConsulCorp/CN=*.$TLD/emailAddress=admin@dev.null.com" -newkey rsa:1024 -nodes -out consul.csr -keyout consul.key
-openssl ca -batch -config myca.conf -notext -in consul.csr -out consul.cert
+ls
 
-store_secret ca.cert.pem ca.cert
-store_secret consul.cert.pem consul.cert
-store_secret consul.key.pem consul.key
+store_secret ca.cert demo-root.cer 
+store_secret consul.cert server.cer
+store_secret consul.key server.key
