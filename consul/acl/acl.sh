@@ -44,7 +44,7 @@ echo "Setting ACL Agent Token: $token"
 curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 "{
   \"Token\": \"$token\"
-}" http://consul-ui.$TLD/v1/agent/token/acl_agent_token
+}" https://consul-ui.$TLD/v1/agent/token/acl_agent_token
 
 # Set the Anonymous Token Policy
 echo "Setting Anonymous Token Policy"
@@ -53,7 +53,8 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
   "ID": "anonymous",
   "Type": "client",
   "Rules": "node \"\" { policy = \"read\" } service \"consul\" { policy = \"read\" } key \"\" { policy = \"deny\" }"
-}'  http://consul-ui.$TLD/v1/acl/update
+}'  https://consul-ui.$TLD/v1/acl/update
+
 
 # Create the acl configuration
 echo "Writing ACL Config file."
@@ -65,3 +66,13 @@ docker service update --config-add source=acl.json,target=/consul/config/acl.jso
 docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_agent
 
 
+echo 'Creating Agent Token'
+agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
+'{
+  "Name": "Traefik",
+  "Type": "client",
+  "Rules": "session \"\" { policy = \"write\" } key \"traefik\" { policy = \"write\" }"
+}' -k -v http://consul-ui.$TLD/v1/acl/create)
+
+token=$(echo $agentToken | jq --raw-output ".ID")
+echo "Traefik Token: $token"
