@@ -23,4 +23,7 @@ Bhavik Kumar - Your blog posts on Consul and Vault were extremely helpful.
 - https://bhavik.io/2017/12/19/consul-with-docker-swarm-mode.html
 - https://bhavik.io/2018/01/09/vault-with-docker-swarm-mode.html
 
+GnuPG Documentation
+- How to generate a key unattended: https://www.gnupg.org/documentation/manuals/gnupg/Unattended-GPG-key-generation.html
+- How to export a key unattended: https://lists.gnupg.org/pipermail/gnupg-users/2017-April/058162.html
 See https://www.consul.io/docs/agent/options.html for encrypt value.
