@@ -3,7 +3,7 @@ secret_shares=0
 if [[ $secret_shares_status_code -eq 200 ]]
 then
   echo 'Setting $secret_shares to existing value'
-  secret_shares=$(curl --request GET --header "X-Consul-Token:$CONSUL_ACL_TOKEN" $CONSUL_URI/v1/kv/vault_keys/secret_shares?raw)
+  secret_shares=$(curl --silent --request GET --header "X-Consul-Token:$CONSUL_ACL_TOKEN" $CONSUL_URI/v1/kv/vault_keys/secret_shares?raw)
   let secret_shares=$secret_shares+1
 fi
 
@@ -30,7 +30,7 @@ EOF
     %commit
     %echo done
 EOF
-  publickey=$(gpg --batch --export --armor $index@keyring)
+  publickey=$(gpg --batch --export $index@keyring | base64)
   privatekey=$(gpg --batch --passphrase "$arg" --pinentry-mode loopback --export-secret-keys --armor $index@keyring)
   ownertrust=$(gpg --export-ownertrust)
   keypath='pgp_keys'
@@ -41,10 +41,10 @@ EOF
   else
     echo 'Creating Secret Share PGP Key'
   fi
-  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$publickey" $CONSUL_URI/v1/kv/vault_keys/public_keys/$keypath/key$index.key
-  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$privatekey" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.key
-  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$ownertrust" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.ownertrust.txt
-  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_shares
-  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_threshold
+  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$publickey" $CONSUL_URI/v1/kv/vault_keys/public_keys/$keypath/key$index.key
+  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$privatekey" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.key
+  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$ownertrust" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.ownertrust.txt
+  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_shares
+  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_threshold
   let "index+=1"
 done 
