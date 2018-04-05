@@ -13,7 +13,7 @@ docker network create -d overlay --subnet=192.168.0.0/16 --attachable default_ne
 docker stack deploy -c ./consul/consul.stack.yml consul
 
 # Configure Consul ACLs
-docker run --rm -it -e MASTER_TOKEN=$MASTER_TOKEN -v /var/run/docker.sock:/var/run/docker.sock estenrye/consul-acl
+docker run --rm -it --network default_net -e MASTER_TOKEN=$MASTER_TOKEN -v /var/run/docker.sock:/var/run/docker.sock estenrye/consul-acl
 
 # Set up Traefik Consul ACL Token Environment variable output from the last command.
 # Traefik needs this value to write its configuration.

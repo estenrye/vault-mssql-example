@@ -12,7 +12,7 @@ if [[ -z $MASTER_TOKEN ]]; then
     fi
 fi
 
-until $(curl --output /dev/null --silent --fail http://consul-ui.d.ryezone.com/v1/health/service/consul --header "X-Consul-Token: $MASTER_TOKEN" | jq '.'); do
+until $(curl --output /dev/null --silent --fail http://consul.server:8500/v1/health/service/consul --header "X-Consul-Token: $MASTER_TOKEN" | jq '.'); do
     echo 'Waiting for successful connection to consul.'
     sleep 5
 done
