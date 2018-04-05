@@ -79,5 +79,16 @@ agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data 
 
 vaultToken=$(echo $agentToken | jq --raw-output ".ID")
 
+echo 'Creating Vault Keygen Token'
+agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
+'{
+  "Name": "Vault",
+  "Type": "client",
+  "Rules": "{ "key":{ "vault_keys": { "policy":"write" } } }"
+}' http://consul.server:8500/v1/acl/create)
+
+vaultKeygenToken=$(echo $agentToken | jq --raw-output ".ID")
+
 echo "Traefik ACL Token: export TRAEFIK_CONSUL_TOKEN='$traefikToken'"
 echo "Vault ACL Token: export VAULT_CONSUL_TOKEN='$vaultToken'"
+echo "Vault Keygen Token: export VAULT_KEGEN_TOKEN='$vaultKeygenToken'"
