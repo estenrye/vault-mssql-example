@@ -30,8 +30,8 @@ EOF
     %commit
     %echo done
 EOF
-  publickey=$(gpg --batch --export $index@keyring | base64)
-  privatekey=$(gpg --batch --passphrase "$arg" --pinentry-mode loopback --export-secret-keys --armor $index@keyring)
+  publickey=$(gpg --batch --export --local-user $index@keyring | base64)
+  privatekey=$(gpg --batch --passphrase "$arg" --pinentry-mode loopback --export-secret-keys --local-user $index@keyring --armor $index@keyring)
   ownertrust=$(gpg --export-ownertrust)
   keypath='pgp_keys'
   if [[ $index -eq 0 ]]
