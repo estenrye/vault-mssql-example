@@ -26,4 +26,6 @@ Bhavik Kumar - Your blog posts on Consul and Vault were extremely helpful.
 GnuPG Documentation
 - How to generate a key unattended: https://www.gnupg.org/documentation/manuals/gnupg/Unattended-GPG-key-generation.html
 - How to export a key unattended: https://lists.gnupg.org/pipermail/gnupg-users/2017-April/058162.html
+- Great cheat sheet for exporting keys: http://irtfweb.ifa.hawaii.edu/~lockhart/gpg/
+
 See https://www.consul.io/docs/agent/options.html for encrypt value.
