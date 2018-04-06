@@ -24,4 +24,17 @@ EOF
 )
 
 initResponse=$(curl --request PUT --data "$initData" http://vault:8200/v1/sys/init)
+
+keys=$($initResponse | jq --raw-output '.keys | .[]')
+root_token=$($initResponse | jq --raw-output '.root_token')
+
+index=1
+for key in $keys
+do
+  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$publickey" $CONSUL_URI/v1/kv/vault_keys/seal_keys/key$index.cipher.txt
+  let index=$index+1
+done
+
+curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$publickey" $CONSUL_URI/v1/kv/vault_keys/root_token.cipher.txt
+
 echo $initResponse
