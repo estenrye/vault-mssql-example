@@ -84,7 +84,7 @@ agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data 
 '{
   "Name": "Vault",
   "Type": "client",
-  "Rules": "{ "key":{ "vault_keys": { "policy":"write" } } }"
+  "Rules": "key \"vault_keys\" { policy = \"write\" }"
 }' http://consul.server:8500/v1/acl/create)
 
 vaultKeygenToken=$(echo $agentToken | jq --raw-output ".ID")
