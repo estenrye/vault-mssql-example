@@ -41,9 +41,6 @@ docker stack deploy -c ./consul/consul.agent.stack.yml consul_agent
 # Deploy Traefik
 docker stack deploy -c ./traefik/traefik.stack.yml traefik
 
-# Deploy Vault on each master node.
-/bin/sh $SCRIPTPATH/vault/deploy-vault.sh
-
 # Generate GPG keys for root token and seal key tokens
  docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
@@ -54,6 +51,9 @@ docker stack deploy -c ./traefik/traefik.stack.yml traefik
     seal_key_password2 \
     seal_key_password3 \
     seal_key_passwordn
+
+# Deploy Vault on each master node.
+/bin/sh $SCRIPTPATH/vault/deploy-vault.sh
 
 # Initialize the Vault
 docker run --rm \
@@ -66,7 +66,7 @@ docker run --rm \
 docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
     -e CONSUL_URI=https://consul-ui.$TLD \
-    -e VAULT_URI=http://vault:8200 \
+    -e VAULT_URI=$VAULT_REDIRECT_ADDR \
     --network default_net \
     estenrye/vault-unseal \
     seal_key_index \

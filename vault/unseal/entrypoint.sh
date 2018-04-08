@@ -34,4 +34,4 @@ then
   exit 1
 fi
 
-curl --request PUT --data "{ \"key\":\"$seal_key\"}" http://vault:8200/v1/sys/unseal
+curl --request PUT --data "{ \"key\":\"$seal_key\"}" $VAULT_URI/v1/sys/unseal
