@@ -54,8 +54,8 @@ sed -i'' "s/<<ACL_TOKEN>>/$token/g" $SCRIPTPATH/acl.json
 docker config create acl.json $SCRIPTPATH/acl.json
 
 # Load configuration into services
-docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_server
-docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_agent
+# docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_server
+# docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_agent
 
 
 echo 'Creating Traefik Token'
@@ -89,6 +89,7 @@ agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data 
 
 vaultKeygenToken=$(echo $agentToken | jq --raw-output ".ID")
 
+echo "Consul ACL Token: export CONSUL_ACL_TOKEN='$token'"
 echo "Traefik ACL Token: export TRAEFIK_CONSUL_TOKEN='$traefikToken'"
 echo "Vault ACL Token: export VAULT_CONSUL_TOKEN='$vaultToken'"
 echo "Vault Keygen Token: export VAULT_KEYGEN_TOKEN='$vaultKeygenToken'"
