@@ -10,8 +10,8 @@ services:
       - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
     command:
       - "storeconfig"
-      - "--debug=false"
-      - "--loglevel=ERROR"
+      - "--debug=true
+      - "--loglevel=DEBUG"
       - "--api"
       - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
       - "--entrypoints=Name:https Address::443 TLS"
