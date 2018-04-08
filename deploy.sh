@@ -19,7 +19,7 @@ docker network create \
     default_net
 
 # Deploy Consul.  This provides our key-value store for everything that follows.
-docker stack deploy -c ./consul/consul.stack.yml consul
+docker stack deploy -c ./consul/consul.server.stack.yml consul_server
 
 # Configure Consul ACLs
 docker run --rm \
@@ -30,9 +30,13 @@ docker run --rm \
 
 # Set up Traefik Consul ACL Token Environment variable output from the last command.
 # Traefik needs this value to write its configuration.
+export CONSUL_ACL_TOKEN='token-guid-here'
 export TRAEFIK_CONSUL_TOKEN='token-guid-here'
 export VAULT_CONSUL_TOKEN='token-guid-here'
 export VAULT_KEYGEN_TOKEN='token-guid-here'
+
+# Deploy Consul.  This provides our key-value store for everything that follows.
+docker stack deploy -c ./consul/consul.agent.stack.yml consul_agent
 
 # Deploy Traefik
 docker stack deploy -c ./traefik/traefik.stack.yml traefik

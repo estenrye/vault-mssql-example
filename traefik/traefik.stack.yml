@@ -15,6 +15,7 @@ services:
       - "--api"
       - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
       - "--entrypoints=Name:https Address::443 TLS"
+      - "--entrypoints=Name:traefik Address::8080"
       - "--defaultentrypoints=http,https"
       - "--acme"
       - "--acme.storage=traefik/acme/account"
