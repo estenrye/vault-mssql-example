@@ -50,7 +50,7 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 
 # Create the acl configuration
 echo "Writing ACL Config file."
-sed -i'' "s/<<ACL_TOKEN>>/$agentToken/g" $SCRIPTPATH/acl.json
+sed -i'' "s/<<ACL_TOKEN>>/$token/g" $SCRIPTPATH/acl.json
 docker config create acl.json $SCRIPTPATH/acl.json
 
 # Load configuration into services
