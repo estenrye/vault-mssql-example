@@ -41,10 +41,10 @@ EOF
   else
     echo 'Creating Secret Share PGP Key'
   fi
-  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$publickey" $CONSUL_URI/v1/kv/vault_keys/public_keys/$keypath/key$index.key
-  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$privatekey" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.key
-  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$ownertrust" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.ownertrust.txt
-  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_shares
-  curl --silent --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_threshold
+  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$publickey" $CONSUL_URI/v1/kv/vault_keys/public_keys/$keypath/key$index.key
+  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$privatekey" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.key
+  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$ownertrust" $CONSUL_URI/v1/kv/vault_keys/private_keys/$keypath/key$index.ownertrust.txt
+  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_shares
+  curl --request PUT --header "X-Consul-Token: $CONSUL_ACL_TOKEN" --data "$index" $CONSUL_URI/v1/kv/vault_keys/secret_threshold
   let "index+=1"
 done 

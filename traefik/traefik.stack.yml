@@ -10,11 +10,12 @@ services:
       - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
     command:
       - "storeconfig"
-      - "--debug=false"
-      - "--loglevel=ERROR"
+      - "--debug=true"
+      - "--loglevel=DEBUG"
       - "--api"
       - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
       - "--entrypoints=Name:https Address::443 TLS"
+      - "--entrypoints=Name:traefik Address::8080"
       - "--defaultentrypoints=http,https"
       - "--acme"
       - "--acme.storage=traefik/acme/account"

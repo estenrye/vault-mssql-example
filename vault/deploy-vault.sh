@@ -5,7 +5,7 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 mkdir -p /home/docker/vault
-sed "s/<<ACL_TOKEN>>/$VAULT_CONSUL_TOKEN/g" $SCRIPTPATH/vault.hcl > /home/docker/vault/vault.hcl
+sed "s/<<ACL_TOKEN>>/$VAULT_TOKEN/g" $SCRIPTPATH/vault.hcl > /home/docker/vault/vault.hcl
 
 docker run -d --name vault \
     --network default_net \
@@ -13,11 +13,5 @@ docker run -d --name vault \
     -e 'VAULT_REDIRECT_INTERFACE=eth0' \
     -e "VAULT_CLUSTER_ADDR=https://vault.$TLD" \
     -v /home/docker/vault:/config \
-    --label "traefik.backend=vault.server" \
-    --label "traefik.docker.network=default_net" \
-    --label "traefik.frontend.rule=Host:vault.$TLD" \
-    --label "traefik.enable=true" \
-    --label "traefik.port=8200" \
-    --label "traefik.protocol=http" \
     --cap-add IPC_LOCK \
     vault server -config=/config/vault.hcl
