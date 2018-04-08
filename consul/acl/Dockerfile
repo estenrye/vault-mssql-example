@@ -9,5 +9,5 @@ RUN apk update && \
   apk add --no-cache curl && \
   rm -rf /var/cache/apk/*
 
-COPY acl.json.tmpl acl.sh ./
+COPY acl.json acl.sh ./
 ENTRYPOINT [ "/bin/sh", "acl.sh" ]
