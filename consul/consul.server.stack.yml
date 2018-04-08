@@ -18,6 +18,7 @@ services:
             "acl_master_token":"${MASTER_TOKEN}",
             "acl_default_policy": "deny",
             "acl_down_policy": "extend-cache",
+            "acl_agent_token":"${MASTER_TOKEN}",
             "leave_on_terminate" : true,
             "server_name" : "server.${REGION}.consul",
             "skip_leave_on_interrupt" : true,
@@ -58,7 +59,7 @@ services:
       restart_policy:
         condition: any
         delay: 5s
-        window: 120s
+        window: 240s
       placement:
         constraints:
           - node.role == manager
@@ -66,62 +67,6 @@ services:
         - traefik.backend=consul.server
         - traefik.docker.network=default_net
         - traefik.frontend.rule=Host:consul-ui.${TLD}
-        - traefik.enable=true
-        - traefik.port=8500
-        - traefik.protocol=http
-  # Deploy the consul agent instances
-  agent:
-    image: consul:latest
-    networks:
-      default_net:
-        aliases:
-          - consul.server
-     # Start the consul agent with the given configuration
-    environment:
-      - 'CONSUL_LOCAL_CONFIG={
-            "acl_datacenter":"${REGION}",
-            "leave_on_terminate" : true,
-            "server_name" : "agent.${REGION}.consul",
-            "skip_leave_on_interrupt" : false,
-            "disable_update_check": true
-          }'
-    command: 
-      - "agent"
-      - "-client=0.0.0.0"
-      - "-advertise={{ GetInterfaceIP \"eth0\" }}"
-      - "-bind={{ GetInterfaceIP \"eth0\" }}"
-      - "-data-dir=/consul/data"
-      - "-datacenter=${REGION}"
-      - "-encrypt=${ENCRYPTION_TOKEN}"
-      - "-http-port=8500"
-      - "-retry-join=consul.server"
-      - "-log-level=info"
-    # Mount the configuration and data volumes to the container.
-    # Mount the data volumes to the container.
-    volumes:
-      - type: bind
-        source: /home/docker/consul/data
-        target: /consul/data
-    # Deploy the consul agent on all servers which are workers.
-    # Use DNS Round Robin instead VIP for discovery.
-    deploy:
-      mode: global
-      endpoint_mode: dnsrr
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 30s
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 120s
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-        - traefik.backend=consul.client
-        - traefik.docker.network=default_net
-        - traefik.frontend.rule=Host:consul-api.${TLD}
         - traefik.enable=true
         - traefik.port=8500
         - traefik.protocol=http

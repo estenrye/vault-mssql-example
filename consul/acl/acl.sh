@@ -12,7 +12,7 @@ if [[ -z $MASTER_TOKEN ]]; then
     fi
 fi
 
-until $(curl --output /dev/null --silent --fail http://consul-ui.d.ryezone.com/v1/health/service/consul --header "X-Consul-Token: $MASTER_TOKEN" | jq '.'); do
+until $(curl --output /dev/null --silent --fail http://consul.server:8500/v1/health/service/consul --header "X-Consul-Token: $MASTER_TOKEN" | jq '.'); do
     echo 'Waiting for successful connection to consul.'
     sleep 5
 done
@@ -50,21 +50,46 @@ curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 
 # Create the acl configuration
 echo "Writing ACL Config file."
-sed "s/<<ACL_TOKEN>>/$agentToken/g" $SCRIPTPATH/acl.json.tmpl > ~/out/acl.json
-docker config create acl.json ~/out/acl.json
+sed -i'' "s/<<ACL_TOKEN>>/$token/g" $SCRIPTPATH/acl.json
+docker config create acl.json $SCRIPTPATH/acl.json
 
 # Load configuration into services
-docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_server
-docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_agent
+# docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_server
+# docker service update --config-add source=acl.json,target=/consul/config/acl.json,mode=0440 consul_agent
 
 
-echo 'Creating Agent Token'
+echo 'Creating Traefik Token'
 agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
 '{
   "Name": "Traefik",
   "Type": "client",
   "Rules": "session \"\" { policy = \"write\" } key \"traefik\" { policy = \"write\" }"
-}' -k -v http://consul.server:8500/v1/acl/create)
+}' http://consul.server:8500/v1/acl/create)
 
-token=$(echo $agentToken | jq --raw-output ".ID")
-echo "Traefik Token: $token"
+traefikToken=$(echo $agentToken | jq --raw-output ".ID")
+
+
+echo 'Creating Vault Token'
+agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
+'{
+  "Name": "Vault",
+  "Type": "client",
+  "Rules": "{\"key\": {\"vault/\": {\"policy\":\"write\"}},  \"node\": {\"\": {\"policy\": \"write\"}},\"service\": { \"vault\": {\"policy\": \"write\"}},\"agent\": {\"\": {\"policy\": \"write\"}},\"session\": {\"\": {\"policy\": \"write\"}}}"
+}' http://consul.server:8500/v1/acl/create)
+
+vaultToken=$(echo $agentToken | jq --raw-output ".ID")
+
+echo 'Creating Vault Keygen Token'
+agentToken=$(curl --request PUT --header "X-Consul-Token: $MASTER_TOKEN" --data \
+'{
+  "Name": "Vault Keygen Token",
+  "Type": "client",
+  "Rules": "key \"vault_keys\" { policy = \"write\" }"
+}' http://consul.server:8500/v1/acl/create)
+
+vaultKeygenToken=$(echo $agentToken | jq --raw-output ".ID")
+
+echo "Consul ACL Token: export CONSUL_ACL_TOKEN='$token'"
+echo "Traefik ACL Token: export TRAEFIK_CONSUL_TOKEN='$traefikToken'"
+echo "Vault ACL Token: export VAULT_CONSUL_TOKEN='$vaultToken'"
+echo "Vault Keygen Token: export VAULT_KEYGEN_TOKEN='$vaultKeygenToken'"
