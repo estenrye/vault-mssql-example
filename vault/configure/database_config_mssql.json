@@ -1,0 +1,7 @@
+{
+	"plugin_name":"mssql-database-plugin",
+	"allowed_roles":"todoApp_rw",
+	"connection_url": "sqlserver://<<VAULT_DB_USER>>:<<VAULT_DB_PASS>>@<<DB_SERVER>>:<<DB_PORT>>?encrypt=true&TrustServerCertificate=true",
+	"max_open_connections": 5,
+	"max_connection_lifetime": "5s"
+}

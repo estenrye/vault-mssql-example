@@ -1,0 +1,6 @@
+{
+	"no_parent":true,
+	"policies":["todo_bootstrapToken"],
+	"no_default_policy":true,
+	"display_name":"todo_bootstrapToken"
+}
