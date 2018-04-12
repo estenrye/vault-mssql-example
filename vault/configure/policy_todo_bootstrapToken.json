@@ -1,0 +1,3 @@
+{
+	"policy":"path \"auth/approle/role/todo/role-id\" { capabilities=[\"read\"] } path \"auth/approle/role/todo/secret-id\" { capabilities=[\"update\"] }"
+}

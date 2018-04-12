@@ -1,0 +1,5 @@
+{
+	"db_name":"mssql",
+	"creation_statements":"USE [master]; CREATE LOGIN [{{name}}] WITH PASSWORD=N'{{password}}', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF; USE [todoApi]; CREATE USER [{{name}}] FOR LOGIN [{{name}}]; ALTER ROLE [db_datareader] ADD MEMBER [{{name}}]; ALTER ROLE [db_datawriter] ADD MEMBER [{{name}}];",
+	"revocation_statements":"USE [todoApi]; DROP USER [{{name}}]; USE [master]; DROP LOGIN [{{name}}];"
+}
