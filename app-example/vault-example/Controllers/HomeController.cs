@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Tools;
@@ -11,38 +10,30 @@ namespace vault_example.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController(IConfiguration config)
+        public IVaultSqlCredentials CredentialManager { get; set; }
+
+        public HomeController(IVaultSqlCredentials creds)
         {
-            Configuration = config;
+            CredentialManager = creds;
         }
 
-        public IConfiguration Configuration { get; set; }
-        // GET: Home
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            var model = new VaultAppRole(Configuration);
-            return View(model);
-        }
-
-        [HttpPost]
-        public ActionResult GetSecrets([FromForm]VaultAppRole model)
-        {
-            model.GetSecrets();
-            return View("Index", model);
+            return View(CredentialManager);
         }
 
         [HttpPost]
-        public ActionResult GetToken([FromForm]VaultAppRole model)
+        public IActionResult RefreshToken()
         {
-            model.GetToken();
-            return View("Index", model);
+            CredentialManager.RefreshToken();
+            return View("Index", CredentialManager);
         }
 
         [HttpPost]
-        public ActionResult GetSqlCredentials([FromForm]VaultAppRole model)
+        public IActionResult GetSqlCredentials()
         {
-            model.GetCredentials();
-            return View("Index", model);
+            CredentialManager.GetCredentials();
+            return View("Index", CredentialManager);
         }
     }
 }

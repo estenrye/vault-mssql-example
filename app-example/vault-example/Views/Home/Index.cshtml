@@ -1,4 +1,4 @@
-﻿@model Tools.VaultAppRole
+﻿@model Tools.VaultSqlCredentials
 
 @{
     ViewData["Title"] = "Home page";
@@ -9,39 +9,20 @@
 
 <form asp-controller="Home" method="post">
     <div>
-        <h1>Vault App Role Credentials</h1>
-        <div class="col-md-12">
-            <div class="col-md-3">
-                <label>Vault Uri</label>
-                <input class="col-md-12" name="VaultUri" value="@Model.VaultUri" />
-            </div>
-            <div class="col-md-3">
-                <label>App Role Auth Mountpoint</label>
-                <input class="col-md-12" name="AppRoleMountpoint" value="@Model.AppRoleMountpoint" />
-            </div>
-            <div class="col-md-3">
-                <label>Bootstrap Token</label>
-                <input class="col-md-12" name="BootstrapToken" value="@Model.BootstrapToken" />
-            </div>
-            <div class="col-md-3">
-                <label>App Role Name</label>
-                <input class="col-md-12" name="AppRoleName" value="@Model.AppRoleName" />
-            </div>
-            <button type="submit" asp-action="GetSecrets" class="col-md-12">Get Role Id and Secret Id</button>
-        </div>
-    </div>
-    <div>
         <h1>Vault App Role Secrets</h1>
         <div class="col-md-12">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label>Role Id</label>
                 <input class="col-md-12" name="RoleId" value="@Model.RoleId" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label>Secret Id</label>
                 <input class="col-md-12" name="SecretId" value="@Model.SecretId" />
             </div>
-            <button type="submit" asp-action="GetToken" class="col-md-12">Login and Get Token</button>
+            <div class="col-md-4">
+                <label>Secret Id Expiration</label>
+                <p class="col-md-12">@Model.SecretIdExpiration</p>
+            </div>
         </div>
     </div>
     <div>
@@ -52,12 +33,12 @@
                 <input class="col-md-12" name="Token" value="@Model.Token" />
             </div>
             <div class="col-md-4">
-                <label>Database Secret Mountpoint</label>
-                <input class="col-md-12" name="DatabaseMountpoint" value="@Model.DatabaseMountpoint" />
+                <label>Token Expiration</label>
+                <p class="col-md-12">@Model.TokenExpiration</p>
             </div>
             <div class="col-md-4">
-                <label>Database Role</label>
-                <input class="col-md-12" name="DatabaseRole" value="todoApp_rw" />
+                <label>Token Uses Remaining</label>
+                <p class="col-md-12">@Model.TokenUsesRemaining</p>
             </div>
             <button type="submit" asp-action="GetSqlCredentials" class="col-md-12">Get SQL Login Credentials</button>
         </div>
