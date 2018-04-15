@@ -23,13 +23,6 @@ namespace vault_example.Controllers
         }
 
         [HttpPost]
-        public IActionResult RefreshToken()
-        {
-            CredentialManager.RefreshToken();
-            return View("Index", CredentialManager);
-        }
-
-        [HttpPost]
         public IActionResult GetSqlCredentials()
         {
             CredentialManager.GetCredentials();

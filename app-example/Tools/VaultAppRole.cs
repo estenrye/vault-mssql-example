@@ -1,7 +1,5 @@
 ﻿using System;
 using Vault;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 
 namespace Tools
@@ -37,9 +35,11 @@ namespace Tools
 
         public void GetSecrets()
         {
-            var vaultClient = new VaultClient();
-            vaultClient.Address = VaultUri;
-            vaultClient.Token = BootstrapToken;
+            var vaultClient = new VaultClient
+            {
+                Address = VaultUri,
+                Token = BootstrapToken
+            };
             var roleIdResponse = vaultClient.Auth.Read<Vault.Models.Auth.AppRole.RoleIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/role-id");
             var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
             RoleId = roleIdResponse.Result.Data.RoleId;
@@ -48,8 +48,10 @@ namespace Tools
 
         public void GetToken()
         {
-            var vaultClient = new VaultClient();
-            vaultClient.Address = VaultUri;
+            var vaultClient = new VaultClient
+            {
+                Address = VaultUri
+            };
 
             var appRole = new Vault.Models.Auth.AppRole.LoginRequest()
             {
@@ -64,9 +66,11 @@ namespace Tools
 
         public void GetCredentials()
         {
-            var vaultClient = new VaultClient();
-            vaultClient.Address = VaultUri;
-            vaultClient.Token = Token;
+            var vaultClient = new VaultClient
+            {
+                Address = VaultUri,
+                Token = Token
+            };
 
             var credentialResponse = vaultClient.Secret.Read<SqlLoginCredentials>($"{DatabaseMountpoint}/creds/{DatabaseRole}");
             Credentials = credentialResponse.Result.Data;

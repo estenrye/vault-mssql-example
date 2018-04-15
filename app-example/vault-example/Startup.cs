@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tools;
+using vault_example.Models;
 
 namespace vault_example
 {
@@ -19,6 +21,12 @@ namespace vault_example
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
             Configuration = builder.Build();
         }
         public IConfiguration Configuration { get; }
@@ -28,6 +36,8 @@ namespace vault_example
         {
             services.AddSingleton(Configuration);
             services.AddSingleton<IVaultSqlCredentials>(new VaultSqlCredentials(Configuration));
+            services.AddScoped<ITodoItemDesignTimeDbContextFactory, TodoItemDbContextFactory>();
+            services.AddDbContext<TodoItemDbContext>();
             services.AddMvc();
         }
 
