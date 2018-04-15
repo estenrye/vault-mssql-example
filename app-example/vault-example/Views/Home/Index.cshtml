@@ -11,17 +11,21 @@
     <div>
         <h1>Vault App Role Secrets</h1>
         <div class="col-md-12">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label>Role Id</label>
                 <input class="col-md-12" name="RoleId" value="@Model.RoleId" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label>Secret Id</label>
                 <input class="col-md-12" name="SecretId" value="@Model.SecretId" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label>Secret Id Expiration</label>
                 <p class="col-md-12">@Model.SecretIdExpiration</p>
+            </div>
+            <div class="col-md-3">
+                <label>Secret Id Uses Remaining</label>
+                <p class="col-md-12">@Model.SecretIdNumUses</p>
             </div>
         </div>
     </div>
@@ -48,8 +52,19 @@
 
 <div>
     <h1>Sql Server Credentials</h1>
-    <label>UserName</label>
-    <p>@Model.Credentials.username</p><br />
-    <label>Password</label>
-    <p>@Model.Credentials.password</p>
+    <div>
+        <div class="col-md-4">
+            <label>UserName</label>
+            <p>@Model.SqlLoginUsername</p>
+        </div>
+        <div class="col-md-4">
+            <label>Password</label>
+            <p>@Model.SqlLoginPassword</p>
+        </div>
+        <div class="col-md-4">
+            <label>SQL Login Expiration</label>
+            <p>@Model.SqlLoginExpiration</p>
+        </div>
+
+    </div>
 </div>

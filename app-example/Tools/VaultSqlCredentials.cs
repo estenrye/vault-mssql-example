@@ -19,10 +19,13 @@ namespace Tools
         public string RoleId { get; set; }
         public string SecretId { get; set; }
         public DateTime? SecretIdExpiration { get; set; }
+        public int? SecretIdNumUses { get; set; }
         public string Token { get; set; }
         public DateTime? TokenExpiration { get; set; }
         public int? TokenUsesRemaining { get; set; }
-        public SqlLoginCredentials Credentials { get; set; }
+        public string SqlLoginUsername { get; set; }
+        public string SqlLoginPassword { get; set; }
+        public DateTime? SqlLoginExpiration { get; set; }
 
 
         public VaultSqlCredentials(IConfiguration config)
@@ -39,43 +42,101 @@ namespace Tools
             var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
             RoleId = roleIdResponse.Result.Data.RoleId;
             SecretId = secretIdResponse.Result.Data.SecretId;
-            if (secretIdResponse.Result.LeaseDuration != 0)
-            {
-                SecretIdExpiration = DateTime.Now.AddSeconds(secretIdResponse.Result.LeaseDuration);
-            }
 
-            Credentials = new SqlLoginCredentials();
+            var appRole = new Vault.Models.Auth.AppRole.LoginRequest()
+            {
+                RoleId = RoleId,
+                SecretId = SecretId
+            };
+            var loginResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.LoginRequest, Vault.Models.NoData>("approle/login", appRole);
+            Token = loginResponse.Result.Auth.ClientToken;
+            if (loginResponse.Result.Auth.LeaseDuration != 0)
+            {
+                TokenExpiration = DateTime.Now.AddSeconds(loginResponse.Result.Auth.LeaseDuration);
+            }
+            vaultClient.Token = Token;
+
+            var secretIdLookupRequest = new Vault.Models.Auth.AppRole.SecretIdLookupRequest
+            {
+                SecretId = SecretId
+            };
+
+            var secretInfo = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdLookupRequest, SecretInfo>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id/lookup", secretIdLookupRequest);
+            SecretIdExpiration = secretInfo.Result.Data.expiration_time.LocalDateTime;
+            SecretIdNumUses = secretInfo.Result.Data.secret_id_num_uses;
+
+            var tokenInfoResponse = vaultClient.Auth.Read<Vault.Models.Auth.Token.LookupResponse>("token/lookup-self");
+            TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses;
         }
 
         public void RefreshToken()
         {
-            if (TokenExpiration == null || TokenUsesRemaining == null || TokenUsesRemaining == 1 || DateTime.Now > TokenExpiration)
+            if (DateTime.Now > SecretIdExpiration || SecretIdNumUses <= 0)
             {
+                vaultClient.Token = BootstrapToken;
+                var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
+                SecretId = secretIdResponse.Result.Data.SecretId;
+                vaultClient.Token = Token;
+
+                SecretIdNumUses = null;
+                SecretIdExpiration = null;
+            }
+
+            if (TokenExpiration == null || TokenUsesRemaining == null || SecretIdNumUses == null|| TokenUsesRemaining <= 0 || DateTime.Now > TokenExpiration)
+            {
+                vaultClient.Token = null;
                 var appRole = new Vault.Models.Auth.AppRole.LoginRequest()
                 {
                     RoleId = RoleId,
                     SecretId = SecretId
                 };
                 var loginResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.LoginRequest, Vault.Models.NoData>("approle/login", appRole);
+                SecretIdNumUses--;
                 Token = loginResponse.Result.Auth.ClientToken;
                 if (loginResponse.Result.Auth.LeaseDuration != 0)
                 {
                     TokenExpiration = DateTime.Now.AddSeconds(loginResponse.Result.Auth.LeaseDuration);
                 }
                 vaultClient.Token = Token;
+
+                var secretIdLookupRequest = new Vault.Models.Auth.AppRole.SecretIdLookupRequest
+                {
+                    SecretId = SecretId
+                };
+
+                var secretInfo = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdLookupRequest, SecretInfo>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id/lookup", secretIdLookupRequest);
+                SecretIdExpiration = secretInfo.Result.Data.expiration_time.LocalDateTime;
+                SecretIdNumUses = secretInfo.Result.Data.secret_id_num_uses;
+
                 var tokenInfoResponse = vaultClient.Auth.Read<Vault.Models.Auth.Token.LookupResponse>("token/lookup-self");
-                TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses--;
+                TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses;
             }
         }
 
-        public void GetCredentials()
+        public SqlLoginCredentials GetCredentials()
         {
+            if (Token != null && TokenUsesRemaining <= 1)
+            {
+                var tokenInfoResponse = vaultClient.Auth.Read<Vault.Models.Auth.Token.LookupResponse>("token/lookup-self");
+                TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses;
+            }
             RefreshToken();
 
-            var credentialResponse = vaultClient.Secret.Read<SqlLoginCredentials>($"{DatabaseMountpoint}/creds/{DatabaseRole}");
-            TokenUsesRemaining--;
+            if (string.IsNullOrWhiteSpace(SqlLoginUsername) || DateTime.Now > SqlLoginExpiration)
+            {
+                var credentialResponse = vaultClient.Secret.Read<SqlLoginCredentials>($"{DatabaseMountpoint}/creds/{DatabaseRole}");
+                TokenUsesRemaining--;
 
-            Credentials = credentialResponse.Result.Data;
+                SqlLoginUsername = credentialResponse.Result.Data.username;
+                SqlLoginPassword = credentialResponse.Result.Data.password;
+                SqlLoginExpiration = DateTime.Now.AddSeconds(credentialResponse.Result.LeaseDuration);
+            }
+
+            return new SqlLoginCredentials
+            {
+                password = SqlLoginPassword,
+                username = SqlLoginUsername
+            };
         }
     }
 }

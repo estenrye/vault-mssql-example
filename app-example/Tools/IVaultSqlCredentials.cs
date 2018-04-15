@@ -7,6 +7,6 @@ namespace Tools
     public interface IVaultSqlCredentials
     {
         void RefreshToken();
-        void GetCredentials();
+        SqlLoginCredentials GetCredentials();
     }
 }

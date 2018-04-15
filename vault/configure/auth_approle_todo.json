@@ -1,10 +1,10 @@
 {
 	"bound_cidr_list":[],
-	"secret_id_ttl":"10m",
-	"token_num_uses":10,
-	"token_ttl":"20m",
+	"secret_id_ttl":"1h",
+	"secret_id_num_uses":10,
+	"token_num_uses":20,
+	"token_ttl":"6m",
 	"token_max_ttl":"30m",
-	"secret_id_num_uses":40,
 	"policies":[
 		"default",
 		"todo_bootstrapToken",
