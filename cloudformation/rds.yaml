@@ -17,16 +17,25 @@ Parameters:
     MinLength: '1'
     Type: String
   DatabasePassword:
-    AllowedPattern: "^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)"
-    ConstraintDescription: Must contain only alphanumeric characters with at least one capital letter and one number.
     Description: The database admin account password.
     MaxLength: '41'
     MinLength: '8'
     NoEcho: 'true'
     Type: String
-  VPC_Id:
+  VpcId:
     Type: AWS::EC2::VPC::Id
     Description: Select the VPC to add a RDS instance to.
+  Subnet1AZ:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for subnet 1.
+  Subnet2AZ:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for subnet 2.
+  MapPublicIpOnLaunch:
+    Description: Configure publicly accessible IP.
+    Default: false
+    Type: String
+    AllowedValues: [true, false]
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -49,7 +58,7 @@ Resources:
     Properties:
       GroupDescription: SQL Server Security Group
       VpcId: 
-        Ref: VPC_Id
+        Ref: VpcId
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: '1433'
@@ -59,6 +68,31 @@ Resources:
         FromPort: '1433'
         ToPort: '1433'
         CidrIp: 73.62.149.173/32
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Ref: Subnet1AZ
+      MapPublicIpOnLaunch: !Ref MapPublicIpOnLaunch
+      CidrBlock: "172.31.48.0/20"
+      VpcId:
+        Ref: VpcId
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Ref: Subnet2AZ
+      MapPublicIpOnLaunch: !Ref MapPublicIpOnLaunch
+      CidrBlock: "172.31.64.0/20"
+      VpcId:
+        Ref: VpcId
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: SQL Server Express RDS Subnet Group
+      SubnetIds:
+        - Ref: Subnet1
+        - Ref: Subnet2
   SQLDatabase:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -68,10 +102,12 @@ Resources:
         - GroupId
       DBInstanceIdentifier:
         Ref: SqlServerInstanceName
+      DBSubnetGroupName:
+        Ref: DbSubnetGroup
       LicenseModel: license-included
       Engine: sqlserver-ex
       EngineVersion: 14.00.1000.169.v1
-      MultiAZ: true
+      MultiAZ: false
       Timezone: UTC
       DBInstanceClass: db.t2.micro
       AllocatedStorage: '20'
