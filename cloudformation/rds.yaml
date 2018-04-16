@@ -86,6 +86,53 @@ Resources:
       CidrBlock: "172.31.64.0/20"
       VpcId:
         Ref: VpcId
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: DB-IG
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn: InternetGateway
+    Properties:
+      InternetGatewayId:
+        Ref: InternetGateway
+      VpcId:
+        Ref: VpcId
+  DbRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: DB-RT
+      VpcId:
+        Ref: VpcId
+  DbInternetTrafficRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - DbRouteTable
+      - AttachGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: InternetGateway
+      RouteTableId:
+        Ref: DbRouteTable
+  DbSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: DbRouteTable
+      SubnetId:
+        Ref: Subnet1
+  DbSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: DbRouteTable
+      SubnetId:
+        Ref: Subnet2
   DbSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
