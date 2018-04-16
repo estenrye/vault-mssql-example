@@ -1,0 +1,150 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates an empty SQL Server RDS database as an example for automated deployments.
+Parameters:
+  SqlServerInstanceName:
+    NoEcho: 'false'
+    Description: RDS SQL Server Instance Name
+    Type: String
+    Default: SqlRdsDB
+    MinLength: '1'
+    MaxLength: '63'
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+  DatabaseUsername:
+    AllowedPattern: "[a-zA-Z0-9]+"
+    ConstraintDescription: must contain only alphanumeric characters.
+    Description: The database admin account user name.
+    MaxLength: '16'
+    MinLength: '1'
+    Type: String
+  DatabasePassword:
+    Description: The database admin account password.
+    MaxLength: '41'
+    MinLength: '8'
+    NoEcho: 'true'
+    Type: String
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Select the VPC to add a RDS instance to.
+  Subnet1AZ:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for subnet 1.
+  Subnet2AZ:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for subnet 2.
+  MapPublicIpOnLaunch:
+    Description: Configure publicly accessible IP.
+    Default: false
+    Type: String
+    AllowedValues: [true, false]
+  DockerStackName:
+    Type: String
+    MinLength: 1
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: SQL Instance name, master username and password
+      Parameters:
+        - SqlServerInstanceName
+        - DatabaseUsername
+        - DatabasePassword
+      ParameterLabels:
+        SqlServerInstanceName:
+            default: Instance name
+        DatabaseUsername:
+            default: Master user name
+        DatabasePassword:
+            default: Password
+Resources:
+  SQLServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SQL Server Security Group
+      VpcId: 
+        Ref: VpcId
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '1433'
+        ToPort: '1433'
+        CidrIp: 172.31.0.0/16
+      - IpProtocol: tcp
+        FromPort: '1433'
+        ToPort: '1433'
+        CidrIp: 73.62.149.173/32
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Ref: Subnet1AZ
+      MapPublicIpOnLaunch: !Ref MapPublicIpOnLaunch
+      CidrBlock: "172.31.48.0/20"
+      VpcId:
+        Ref: VpcId
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Ref: Subnet2AZ
+      MapPublicIpOnLaunch: !Ref MapPublicIpOnLaunch
+      CidrBlock: "172.31.64.0/20"
+      VpcId:
+        Ref: VpcId
+  DbSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Fn::ImportValue:
+          !Sub "${DockerStackName}-RouteTableId"
+      SubnetId:
+        Ref: Subnet1
+  DbSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Fn::ImportValue:
+          !Sub "${DockerStackName}-RouteTableId"
+      SubnetId:
+        Ref: Subnet2
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: SQL Server Express RDS Subnet Group
+      SubnetIds:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  SQLDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      VPCSecurityGroups:
+      - Fn::GetAtt:
+        - SQLServerSecurityGroup
+        - GroupId
+      DBInstanceIdentifier:
+        Ref: SqlServerInstanceName
+      DBSubnetGroupName:
+        Ref: DbSubnetGroup
+      LicenseModel: license-included
+      Engine: sqlserver-ex
+      EngineVersion: 14.00.1000.169.v1
+      MultiAZ: false
+      Timezone: UTC
+      DBInstanceClass: db.t2.micro
+      AllocatedStorage: '20'
+      MasterUsername:
+        Ref: DatabaseUsername
+      MasterUserPassword:
+        Ref: DatabasePassword
+      PubliclyAccessible: 'true'
+      Tags:
+        -
+          Key: "Name"
+          Value: "sqlmaster"
+        -
+          Key: "BillingCode"
+          Value: "SEIS-663"
+      BackupRetentionPeriod: '1'
+    DependsOn: SQLServerSecurityGroup
+Outputs:
+   SQLDatabaseEndpoint:
+     Description: Database endpoint
+     Value: !Sub "${SQLDatabase.Endpoint.Address},${SQLDatabase.Endpoint.Port}"
