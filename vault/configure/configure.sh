@@ -1,5 +1,9 @@
 VAULT_ADDR='http://127.0.0.1:8200'
-VAULT_TOKEN='47469e55-ab29-659b-9094-3701085ef644'
+VAULT_TOKEN='41e066eb-21b0-bc2f-eff6-ec880b5ecd37'
+DB_SERVER='server'
+DB_PORT=1433
+VAULT_DB_USER='user'
+VAULT_DB_PASS='password'
 
 # Enable the AppRole auth method
 curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @auth_enable_appRole.json $VAULT_ADDR/v1/sys/auth/approle
@@ -32,19 +36,19 @@ curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @database_role
 
 # Create a token for accessing the role id and secret id.  Associate the appropriate policy
 tokenResponse=$(curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @token_create_todo_bootstrapToken.json $VAULT_ADDR/v1/auth/token/create)
-SECRET_REQUEST_TOKEN=$($tokenResponse | jq --raw-output '.auth.client_token')
-
+SECRET_REQUEST_TOKEN=$(echo $tokenResponse | ../bin/jq --raw-output '.auth.client_token')
+echo "Bootstrap Token: $SECRET_REQUEST_TOKEN"
 ########################################################################################
 # Get Credentials
 ########################################################################################
 
 # Fetch the identifier of the role
 roleIdentifierResponse=$(curl --request GET --header "X-Vault-Token: $SECRET_REQUEST_TOKEN" $VAULT_ADDR/v1/auth/approle/role/todo/role-id)
-ROLE_ID=$($roleIdentifierResponse | jq --raw-output '.data.role_id')
+ROLE_ID=$(echo $roleIdentifierResponse | ../bin/jq --raw-output '.data.role_id')
 
 # Create a new secret identifier under the role
 secretIdentifierResponse=$(curl --request POST --header "X-Vault-Token: $SECRET_REQUEST_TOKEN" $VAULT_ADDR/v1/auth/approle/role/todo/secret-id)
-SECRET_ID=$($secretIdentifierResponse | jq --raw-output '.data.secret_id')
+SECRET_ID=$(echo $secretIdentifierResponse | ../bin/jq --raw-output '.data.secret_id')
 
 # Login using Role Id and Secret Id.
 tokenResponse=$(curl --request POST \
@@ -52,7 +56,7 @@ tokenResponse=$(curl --request POST \
         \"role_id\":\"$ROLE_ID\",
         \"secret_id\":\"$SECRET_ID\"
     }" $VAULT_ADDR/v1/auth/approle/login)
-ROLE_TOKEN=$($tokenResponse | jq --raw-output '.auth.client_token')
+ROLE_TOKEN=$(echo $tokenResponse | ../bin/jq --raw-output '.auth.client_token')
 
 # Request a credential
 curl --request GET --header "X-Vault-Token: $ROLE_TOKEN" $VAULT_ADDR/v1/database/creds/todoApp_rw

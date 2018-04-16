@@ -1,0 +1,70 @@
+﻿@model Tools.VaultSqlCredentials
+
+@{
+    ViewData["Title"] = "Home page";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+@addTagHelper  *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<form asp-controller="Home" method="post">
+    <div>
+        <h1>Vault App Role Secrets</h1>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <label>Role Id</label>
+                <input class="col-md-12" name="RoleId" value="@Model.RoleId" />
+            </div>
+            <div class="col-md-3">
+                <label>Secret Id</label>
+                <input class="col-md-12" name="SecretId" value="@Model.SecretId" />
+            </div>
+            <div class="col-md-3">
+                <label>Secret Id Expiration</label>
+                <p class="col-md-12">@Model.SecretIdExpiration</p>
+            </div>
+            <div class="col-md-3">
+                <label>Secret Id Uses Remaining</label>
+                <p class="col-md-12">@Model.SecretIdNumUses</p>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h1>Vault Token</h1>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <label>Token</label>
+                <input class="col-md-12" name="Token" value="@Model.Token" />
+            </div>
+            <div class="col-md-4">
+                <label>Token Expiration</label>
+                <p class="col-md-12">@Model.TokenExpiration</p>
+            </div>
+            <div class="col-md-4">
+                <label>Token Uses Remaining</label>
+                <p class="col-md-12">@Model.TokenUsesRemaining</p>
+            </div>
+            <button type="submit" asp-action="GetSqlCredentials" class="col-md-12">Get SQL Login Credentials</button>
+        </div>
+    </div>
+</form>
+
+
+<div>
+    <h1>Sql Server Credentials</h1>
+    <div>
+        <div class="col-md-4">
+            <label>UserName</label>
+            <p>@Model.SqlLoginUsername</p>
+        </div>
+        <div class="col-md-4">
+            <label>Password</label>
+            <p>@Model.SqlLoginPassword</p>
+        </div>
+        <div class="col-md-4">
+            <label>SQL Login Expiration</label>
+            <p>@Model.SqlLoginExpiration</p>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  vault-example:
+    image: vaultexample
+    build:
+      context: .
+      dockerfile: vault-example/Dockerfile

@@ -1,3 +1,3 @@
 {
-	"policy":"path \"database/creds/todoApp_rw\" { capabilities=[\"read\"] } "
+	"policy":"path \"database/creds/todoApp_rw\" { capabilities=[\"read\"] } path \"auth/approle/role/todo/secret-id/lookup\" {capabilities=[\"update\"]}"
 }

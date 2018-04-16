@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vault-example", "vault-example\vault-example.csproj", "{F3BE898F-BB8E-4328-9FBE-05E2EC14A3CB}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A5EF9C0A-6BDB-493F-AAA5-B6A30C2B889F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Tools\Tools.csproj", "{73774468-6FC7-4670-97C3-FD3BA492CD2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3BE898F-BB8E-4328-9FBE-05E2EC14A3CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3BE898F-BB8E-4328-9FBE-05E2EC14A3CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3BE898F-BB8E-4328-9FBE-05E2EC14A3CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3BE898F-BB8E-4328-9FBE-05E2EC14A3CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5EF9C0A-6BDB-493F-AAA5-B6A30C2B889F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5EF9C0A-6BDB-493F-AAA5-B6A30C2B889F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5EF9C0A-6BDB-493F-AAA5-B6A30C2B889F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5EF9C0A-6BDB-493F-AAA5-B6A30C2B889F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73774468-6FC7-4670-97C3-FD3BA492CD2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73774468-6FC7-4670-97C3-FD3BA492CD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73774468-6FC7-4670-97C3-FD3BA492CD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73774468-6FC7-4670-97C3-FD3BA492CD2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B46FF5E0-3056-47C4-9862-6259EE9215BB}
+	EndGlobalSection
+EndGlobal
