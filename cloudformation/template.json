@@ -634,6 +634,11 @@
                     "This region has at least 3 Availability Zones (AZ). This is ideal to ensure a fully functional Swarm in case you lose an AZ."
                 ]
             }
+        },
+        "IGWRouteTableId": {
+            "Description": "Use this Id to associate other stacks with the Internet Gateway.",
+            "Value" : { "Ref" : "RouteViaIgw" },
+            "Export" : {"Name" : { "Fn::Sub": "${AWS::StackName}-RouteTableId" } }
         }
     },
     "Parameters": {
