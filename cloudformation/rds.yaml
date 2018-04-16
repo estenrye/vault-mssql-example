@@ -128,4 +128,4 @@ Resources:
 Outputs:
    SQLDatabaseEndpoint:
      Description: Database endpoint
-     Value: !Sub "${SQLDatabase.Endpoint.Address}:${SQLDatabase.Endpoint.Port}"
+     Value: !Sub "${SQLDatabase.Endpoint.Address},${SQLDatabase.Endpoint.Port}"
