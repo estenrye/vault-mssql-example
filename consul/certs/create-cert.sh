@@ -14,9 +14,9 @@ docker run --rm \
     certbot/dns-route53 \
     certonly \
     --dns-route53 \
-    -d consul-ui.d.ryezone.com \
-    -d consul.server.ryezone.com \
-    --email esten.rye@ryezone.com \
+    -d consul-ui.$3 \
+    -d consul.server.$3 \
+    --email $4 \
     --agree-tos \
     --non-interactive \
     --cert-name consul
