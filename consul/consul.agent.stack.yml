@@ -41,6 +41,11 @@ services:
       - type: bind
         source: /home/docker/consul/data
         target: /consul/data
+    ports:
+      - mode: host
+        target: 8500
+        published: 8500
+        protocol: tcp
     # Deploy the consul agent on all servers which are workers.
     # Use DNS Round Robin instead VIP for discovery.
     deploy:
@@ -57,10 +62,10 @@ services:
       placement:
         constraints:
           - node.role == worker
-      labels:
-        - traefik.backend=consul.client
-        - traefik.docker.network=default_net
-        - traefik.frontend.rule=Host:consul-api.${TLD}
-        - traefik.enable=true
-        - traefik.port=8500
-        - traefik.protocol=http
+      # labels:
+        # - traefik.backend=consul.client
+        # - traefik.docker.network=default_net
+        # - traefik.frontend.rule=Host:consul-ui.${TLD}
+        # - traefik.enable=true
+        # - traefik.port=8500
+        # - traefik.protocol=http

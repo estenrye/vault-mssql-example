@@ -46,6 +46,11 @@ services:
       - type: bind
         source: /home/docker/consul/data
         target: /consul/data
+    ports:
+      - mode: host
+        target: 8500
+        published: 8500
+        protocol: tcp
     # Deploy the consul server on all servers which are managers.
     # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
     # consul server instances when querying consul.server
