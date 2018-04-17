@@ -20,7 +20,7 @@ services:
             "acl_down_policy": "extend-cache",
             "acl_agent_token":"${MASTER_TOKEN}",
             "leave_on_terminate" : true,
-            "server_name" : "server.${REGION}.consul",
+            "server_name" : "consul-server.${PRIVATE_HOSTED_ZONE}",
             "skip_leave_on_interrupt" : true,
             "autopilot": {
               "cleanup_dead_servers": true
