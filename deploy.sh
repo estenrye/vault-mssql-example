@@ -10,6 +10,48 @@ export MANAGER_COUNT=3
 export ENCRYPTION_TOKEN='rp8BG/IebnT1lkKfp9hDyQ=='
 export TLD='d.domain.com'
 export EMAIL='email@d.domain.com'
+export PRIVATE_HOSTED_ZONE='ec2.domain.com'
+export AWS_ACCESS_KEY_ID='accessKey'
+export AWS_SECRET_ACCESS_KEY='secretKey'
+
+# Create internal Wildcard certificate with LetsEncrypt
+
+mkdir -p /home/docker/letsencrypt/config
+mkdir -p /home/docker/letsencrypt/workdir
+mkdir -p /home/docker/letsencrypt/log
+
+externalName="*.$PRIVATE_HOSTED_ZONE"
+
+docker run --rm \
+    -v "/home/docker/letsencrypt/config:/etc/letsencrypt" \
+    -v "/home/docker/letsencrypt/workdir:/var/lib/letsencrypt" \
+    -v "/home/docker/letsencrypt/log:/var/log/letsencrypt" \
+    -p "80:80" \
+    -e "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" \
+    -e "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" \
+    certbot/dns-route53 \
+    certonly \
+    --dns-route53 \
+    -d $externalName \
+    --email $EMAIL \
+    --agree-tos \
+    --non-interactive \
+    --cert-name "wildcard-$PRIVATE_HOSTED_ZONE" \
+    --server https://acme-v02.api.letsencrypt.org/directory \
+
+# back up certificate folder to Docker Secrets API
+
+sudo tar cvzf letsencrypt.tar.gz letsencrypt 
+docker secret create letsencrypt letsencrypt.tar.gz
+
+# extract certificates to the consul directory
+docker service create \
+    --secret letsencrypt \
+    --restart-condition none \
+    --mount "type=bind,source=/home/docker/consul,target=/target" \
+    --mode global \
+    -e PRIVATE_HOSTED_ZONE='' \
+    estenrye/extract-certs    
 
 # Set up Overlay Network
 docker network create \
