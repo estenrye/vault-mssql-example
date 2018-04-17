@@ -757,9 +757,10 @@
             "ConstraintDescription" : "must be a valid DNS zone name."
         },
         "SubDomain":{
-            "ConstraintDescription" : "Name of the subdomain to be used for the wildcard DNS: *.ThisValueHere.HostedZone.",
-            "Description":"Name of the subdomain to be used for the wildcard DNS: *.ThisValueHere.HostedZone.",
+            "ConstraintDescription" : "SubDomain is required.",
+            "Description":"Name of the subdomain to be used for the external wildcard DNS: *.ThisValueHere.HostedZone.",
             "Type":"String",
+            "MinLength":1,
             "Default": "d"
         },
         "ManagerDiskSize": {
@@ -1219,6 +1220,116 @@
                     "HostedZoneId" : { "Fn::GetAtt" : ["ExternalLoadBalancer", "CanonicalHostedZoneNameID"] },
                     "DNSName" : { "Fn::GetAtt" : ["ExternalLoadBalancer","DNSName"] }
                 }            }
+        },
+        "PrivateHostedZone":{
+            "Type": "AWS::Route53::HostedZone",
+            "Properties": {
+                "HostedZoneConfig": {
+                    "Comment": {
+                        "Fn::Join":[
+                            "",
+                            [
+                                "Private Hosted Zone for stack ",
+                                {
+                                    "Ref":"AWS::StackName"
+                                }
+                            ]
+                        ]
+                    }
+                },
+                "Name": {
+                    "Fn::Join":[
+                        "",
+                        [
+                            {
+                                "Ref":"SubDomain"
+                            },
+                            ".",
+                            {
+                                "Ref":"AWS::Region"
+                            },
+                            ".ec2.",
+                            {
+                                "Ref": "HostedZone"
+                            },
+                            "."
+                        ]
+                    ]
+                },
+                "VPCs": [
+                    {
+                        "VPCId": {
+                            "Ref":"Vpc"
+                        },
+                        "VPCRegion":                     {
+                            "Ref":"AWS::Region"
+                        }
+                    }
+                ],
+                "HostedZoneTags" : [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join":[
+                                "",
+                                [
+                                    "Private Hosted Zone - ",
+                                    {
+                                        "Ref":"AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }        
+        },
+        "VpcDhcpOptions":{
+            "Type" : "AWS::EC2::DHCPOptions",
+            "Properties" : {
+                "DomainName":{
+                    "Fn::Join":["", [
+                            {
+                                "Ref":"SubDomain"
+                            },
+                            ".",
+                            {
+                                "Ref":"AWS::Region"
+                            },
+                            ".ec2.",
+                            {
+                                "Ref": "HostedZone"
+                            }
+                        ]
+                    ]
+                },
+                "DomainNameServers":[
+                    "AmazonProvidedDNS"
+                ],
+                "Tags":[
+                    {
+                        "Key":"Name",
+                        "Value":{
+                            "Fn::Join":[
+                                "",
+                                [
+                                    "DHCP Options - ",
+                                    {
+                                        "Ref":"AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "VpcDhcpOptionAssociation":{
+            "Type" : "AWS::EC2::VPCDHCPOptionsAssociation",
+            "Properties" : {
+                "DhcpOptionsId" : { "Ref" : "VpcDhcpOptions" },
+                "VpcId" : { "Ref" : "Vpc"}
+            }
         },
         "ExternalLoadBalancerSG": {
             "DependsOn": "Vpc",
