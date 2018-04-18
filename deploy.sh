@@ -20,8 +20,6 @@ mkdir -p /home/docker/letsencrypt/config
 mkdir -p /home/docker/letsencrypt/workdir
 mkdir -p /home/docker/letsencrypt/log
 
-externalName="*.$PRIVATE_HOSTED_ZONE"
-
 docker run --rm \
     -v "/home/docker/letsencrypt/config:/etc/letsencrypt" \
     -v "/home/docker/letsencrypt/workdir:/var/lib/letsencrypt" \
@@ -32,7 +30,7 @@ docker run --rm \
     certbot/dns-route53 \
     certonly \
     --dns-route53 \
-    -d $externalName \
+    -d "*.$PRIVATE_HOSTED_ZONE" \
     --email $EMAIL \
     --agree-tos \
     --non-interactive \
@@ -40,12 +38,9 @@ docker run --rm \
     --server https://acme-v02.api.letsencrypt.org/directory
 
 # load certicicates into Docker Secrets API
-for file in $(ls /home/docker/letsencrypt/config/live/wildcard-d.ec2.ryezone.com/*.pem); do 
-    docker secret create "$(basename $file '')" "$file"
+for file in $(sudo ls /home/docker/letsencrypt/config/live/wildcard-$PRIVATE_HOSTED_ZONE); do 
+    sudo docker secret create "$(basename $file '')" "/home/docker/letsencrypt/config/live/wildcard-$PRIVATE_HOSTED_ZONE/$file"
 done
-
-sudo tar cvzf letsencrypt.tar.gz letsencrypt 
-docker secret create letsencrypt letsencrypt.tar.gz
 
 # extract certificates to the consul directory
 docker service create \

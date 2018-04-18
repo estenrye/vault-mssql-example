@@ -11,8 +11,7 @@ services:
     networks:
       default_net:
         aliases:
-          - consul-server.${PRIVATE_HOSTED_ZONE}
-          - consul-agent.${PRIVATE_HOSTED_ZONE}
+          - consul-server
      # Start the consul agent with the given configuration
     environment:
       - 'CONSUL_LOCAL_CONFIG={
@@ -21,7 +20,7 @@ services:
             "acl_down_policy": "extend-cache",
             "acl_agent_token":"${CONSUL_ACL_TOKEN}",
             "leave_on_terminate" : true,
-            "server_name" : "consul-agent.${PRIVATE_HOSTED_ZONE}",
+            "server_name" : "consul-server",
             "skip_leave_on_interrupt" : false,
             "disable_update_check": true,
             "key_file":"/consul/certs/privkey.pem",

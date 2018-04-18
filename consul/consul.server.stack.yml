@@ -11,7 +11,7 @@ services:
     networks:
       default_net:
         aliases:
-          - consul-server.${PRIVATE_HOSTED_ZONE}
+          - consul-server
     environment:
       - 'CONSUL_LOCAL_CONFIG={
             "acl_datacenter":"${CONSUL_DATACENTER}",
@@ -20,7 +20,7 @@ services:
             "acl_down_policy": "extend-cache",
             "acl_agent_token":"${MASTER_TOKEN}",
             "leave_on_terminate" : true,
-            "server_name" : "consul-server.${PRIVATE_HOSTED_ZONE}",
+            "server_name" : "consul-server",
             "skip_leave_on_interrupt" : true,
             "autopilot": {
               "cleanup_dead_servers": true
