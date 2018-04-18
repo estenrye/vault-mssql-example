@@ -41,7 +41,7 @@ services:
       - "-data-dir=/consul/data"
       - "-datacenter=${CONSUL_DATACENTER}"
       - "-encrypt=${ENCRYPTION_TOKEN}"
-      - "-retry-join=consul-server.${PRIVATE_HOSTED_ZONE}"
+      - "-retry-join=consul-server"
       - "-log-level=info"
     # Mount the configuration and data volumes to the container.
     # Mount the data volumes to the container.
