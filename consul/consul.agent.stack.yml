@@ -16,7 +16,7 @@ services:
      # Start the consul agent with the given configuration
     environment:
       - 'CONSUL_LOCAL_CONFIG={
-            "acl_datacenter":"consul-server.${PRIVATE_HOSTED_ZONE}",
+            "acl_datacenter":"${CONSUL_DATACENTER}",
             "acl_default_policy": "deny",
             "acl_down_policy": "extend-cache",
             "acl_agent_token":"${CONSUL_ACL_TOKEN}",
@@ -40,7 +40,7 @@ services:
       - "-advertise={{ GetInterfaceIP \"eth0\" }}"
       - "-bind={{ GetInterfaceIP \"eth0\" }}"
       - "-data-dir=/consul/data"
-      - "-datacenter=consul-server.${PRIVATE_HOSTED_ZONE}"
+      - "-datacenter=${CONSUL_DATACENTER}"
       - "-encrypt=${ENCRYPTION_TOKEN}"
       - "-retry-join=consul-server.${PRIVATE_HOSTED_ZONE}"
       - "-log-level=info"
