@@ -1,2 +1,1 @@
-output
-consul/tls
+set-secrets.sh

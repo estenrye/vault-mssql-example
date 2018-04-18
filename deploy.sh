@@ -37,7 +37,7 @@ docker run --rm \
     --agree-tos \
     --non-interactive \
     --cert-name "wildcard-$PRIVATE_HOSTED_ZONE" \
-    --server https://acme-v02.api.letsencrypt.org/directory \
+    --server https://acme-v02.api.letsencrypt.org/directory
 
 # back up certificate folder to Docker Secrets API
 
@@ -50,7 +50,7 @@ docker service create \
     --restart-condition none \
     --mount "type=bind,source=/home/docker/consul,target=/target" \
     --mode global \
-    -e PRIVATE_HOSTED_ZONE='' \
+    -e "PRIVATE_HOSTED_ZONE=$PRIVATE_HOSTED_ZONE" \
     estenrye/extract-certs    
 
 # Set up Overlay Network
@@ -66,7 +66,9 @@ docker stack deploy -c ./consul/consul.server.stack.yml consul_server
 # Configure Consul ACLs
 docker run --rm \
     --network default_net \
-    -e MASTER_TOKEN=$MASTER_TOKEN \
+    -e "MASTER_TOKEN=$MASTER_TOKEN" \
+    -e "PRIVATE_HOSTED_ZONE=$PRIVATE_HOSTED_ZONE" \
+    -v /home/docker/consul/certs:/consul/certs \
     -v /var/run/docker.sock:/var/run/docker.sock \
     estenrye/consul-acl
 
