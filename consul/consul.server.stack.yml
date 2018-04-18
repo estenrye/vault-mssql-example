@@ -7,7 +7,7 @@ networks:
 services:
   # Deploy the consul server instances
   server:
-    image: consul:latest
+    image: estenrye/consul:latest
     networks:
       default_net:
         aliases:
@@ -20,7 +20,7 @@ services:
             "acl_down_policy": "extend-cache",
             "acl_agent_token":"${MASTER_TOKEN}",
             "leave_on_terminate" : true,
-            "server_name" : "consul-server.${PRIVATE_HOSTED_ZONE}",
+            "server_name" : "<<SERVER_NAME>>",
             "skip_leave_on_interrupt" : true,
             "autopilot": {
               "cleanup_dead_servers": true
@@ -33,9 +33,9 @@ services:
               "http":8501,
               "https":8500
             },
-            "verify_incoming": false,
-            "verify_incoming_rpc":false,
-            "verify_outgoing": false 
+            "verify_incoming": true,
+            "verify_incoming_rpc": true,
+            "verify_outgoing": true 
           }'
     command: 
       - "agent"
@@ -58,6 +58,9 @@ services:
       - type: bind
         source: /home/docker/consul/certs
         target: /consul/certs
+      - type: bind
+        source: /var/run/docker.sock
+        targetr: /var/run/docker.sock
     ports:
       - mode: host
         target: 8500
