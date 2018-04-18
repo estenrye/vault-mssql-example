@@ -39,19 +39,24 @@ docker run --rm \
     --cert-name "wildcard-$PRIVATE_HOSTED_ZONE" \
     --server https://acme-v02.api.letsencrypt.org/directory
 
-# back up certificate folder to Docker Secrets API
+# load certicicates into Docker Secrets API
+for file in $(ls /home/docker/letsencrypt/config/live/wildcard-d.ec2.ryezone.com/*.pem); do 
+    docker secret create "$(basename $file '')" "$file"
+done
 
 sudo tar cvzf letsencrypt.tar.gz letsencrypt 
 docker secret create letsencrypt letsencrypt.tar.gz
 
 # extract certificates to the consul directory
 docker service create \
-    --secret letsencrypt \
+    --secret cert.pem \
+    --secret chain.pem \
+    --secret fullchain.pem \
+    --secret privkey.pem \
     --restart-condition none \
     --mount "type=bind,source=/home/docker/consul,target=/target" \
     --mode global \
-    -e "PRIVATE_HOSTED_ZONE=$PRIVATE_HOSTED_ZONE" \
-    estenrye/extract-certs    
+    estenrye/extract-certs:test.4
 
 # Set up Overlay Network
 docker network create \
