@@ -14,7 +14,7 @@ services:
           - consul-server.${PRIVATE_HOSTED_ZONE}
     environment:
       - 'CONSUL_LOCAL_CONFIG={
-            "acl_datacenter":"${REGION}",
+            "acl_datacenter":"${PRIVATE_HOSTED_ZONE}",
             "acl_master_token":"${MASTER_TOKEN}",
             "acl_default_policy": "deny",
             "acl_down_policy": "extend-cache",
@@ -44,7 +44,7 @@ services:
       - "-bootstrap-expect=${MANAGER_COUNT}"
       - "-client=0.0.0.0"
       - "-data-dir=/consul/data"
-      - "-datacenter=${REGION}"
+      - "-datacenter=${PRIVATE_HOSTED_ZONE}"
       - "-encrypt=${ENCRYPTION_TOKEN}"
       - "-retry-join=consul-server.${PRIVATE_HOSTED_ZONE}"
       - "-log-level=info"
