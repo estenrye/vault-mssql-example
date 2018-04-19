@@ -11,7 +11,7 @@ services:
     networks:
       default_net:
         aliases:
-          - consul-server
+          - consul-server.${PRIVATE_HOSTED_ZONE}
      # Start the consul agent with the given configuration
     environment:
       - 'CONSUL_LOCAL_CONFIG={
@@ -31,7 +31,7 @@ services:
               "https":8500
             },
             "verify_incoming": true,
-            "verify_incoming_rpc":false,
+            "verify_incoming_rpc":true,
             "verify_outgoing": true
           }'
     command: 
@@ -42,7 +42,7 @@ services:
       - "-data-dir=/consul/data"
       - "-datacenter=${CONSUL_DATACENTER}"
       - "-encrypt=${ENCRYPTION_TOKEN}"
-      - "-retry-join=consul-server"
+      - "-retry-join=consul-server.${PRIVATE_HOSTED_ZONE}"
       - "-log-level=info"
     # Mount the configuration and data volumes to the container.
     # Mount the data volumes to the container.
