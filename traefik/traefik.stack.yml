@@ -33,7 +33,7 @@ services:
       - "--consul.tls"
       - "--consul.tls.ca=/consul/certs/fullchain.pem"
       - "--consul.tls.key=/consul/certs/privkey.pem"
-      - "--consul.tls.cert=/consul/certs/cert/pem"
+      - "--consul.tls.cert=/consul/certs/cert.pem"
       - "--consul.endpoint=consul-server.${PRIVATE_HOSTED_ZONE}:8500"
       - "--consul.prefix=traefik"
     deploy:
@@ -55,7 +55,7 @@ services:
       - "--consul.tls"
       - "--consul.tls.ca=/consul/certs/fullchain.pem"
       - "--consul.tls.key=/consul/certs/privkey.pem"
-      - "--consul.tls.cert=/consul/certs/cert/pem"
+      - "--consul.tls.cert=/consul/certs/cert.pem"
       - "--consul.endpoint=consul-server.${PRIVATE_HOSTED_ZONE}:8500"
       - "--consul.prefix=traefik"
       - "--consul.watch=true"
