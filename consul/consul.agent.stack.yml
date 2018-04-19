@@ -11,7 +11,7 @@ services:
     networks:
       default_net:
         aliases:
-          - consul-server.${PRIVATE_HOSTED_ZONE}
+          - consul-agent.${PRIVATE_HOSTED_ZONE}
      # Start the consul agent with the given configuration
     environment:
       - 'CONSUL_LOCAL_CONFIG={
