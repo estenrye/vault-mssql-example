@@ -30,7 +30,11 @@ services:
       - "--docker.exposedbydefault=false"
       - "--docker.watch=true"
       - "--consul"
-      - "--consul.endpoint=consul.server:8500"
+      - "--consul.tls"
+      - "--consul.tls.ca=/consul/certs/fullchain.pem"
+      - "--consul.tls.key=/consul/certs/privkey.pem"
+      - "--consul.tls.cert=/consul/certs/cert/pem"
+      - "--consul.endpoint=consul-server.${PRIVATE_HOSTED_ZONE}:8500"
       - "--consul.prefix=traefik"
     deploy:
       restart_policy:
@@ -40,11 +44,19 @@ services:
           - node.role == manager
     networks:
       - default_net
+    volumes:
+      - type: bind
+        source: /home/docker/consul/certs
+        target: /consul/certs
   proxy:
     image: traefik:1.6.0-rc3
     command:
       - "--consul"
-      - "--consul.endpoint=consul.server:8500"
+      - "--consul.tls"
+      - "--consul.tls.ca=/consul/certs/fullchain.pem"
+      - "--consul.tls.key=/consul/certs/privkey.pem"
+      - "--consul.tls.cert=/consul/certs/cert/pem"
+      - "--consul.endpoint=consul-server.${PRIVATE_HOSTED_ZONE}:8500"
       - "--consul.prefix=traefik"
       - "--consul.watch=true"
     environment:
@@ -63,6 +75,9 @@ services:
         mode: ingress
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: /home/docker/consul/certs
+        target: /consul/certs
     deploy:
       mode: global
       update_config:
