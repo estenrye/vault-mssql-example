@@ -27,7 +27,7 @@ services:
       - "--acme.dnschallenge"
       - "--acme.dnschallenge.provider=route53"
       - "--acme.dnschallenge.delaybeforecheck=10s"
-      - "--acme.caserver='https://acme-v02.api.letsencrypt.org/directory'"
+      - "--acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
       - "--acme.OnHostRule=true"
       - "--acme.onDemand=false"
       - "--acme.email=${EMAIL}"
