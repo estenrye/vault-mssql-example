@@ -32,7 +32,7 @@ services:
       - "--acme.onDemand=false"
       - "--acme.email=${EMAIL}"
       - "--acme.acmelogging=true"
-      - "--acme.domains='*.${TLD}'"
+      - "--acme.domains=*.${TLD}"
       - "--docker"
       - "--docker.swarmmode=true"
       - "--docker.domain=${TLD}"
