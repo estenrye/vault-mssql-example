@@ -25,7 +25,7 @@ services:
       - "--acme.storage=traefik/acme/account"
       - "--acme.entryPoint=https"
       - "--acme.dnsChallenge"
-      - "--acme.dnsProider=route53"
+      - "--acme.dnsProvider=route53"
       - "--acme.dnschallenge.delaybeforecheck=10s"
       - "--acme.OnHostRule=true"
       - "--acme.onDemand=false"
