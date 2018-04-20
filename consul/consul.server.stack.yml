@@ -88,5 +88,5 @@ services:
         - traefik.docker.network=default_net
         - traefik.frontend.rule=Host:consul-ui.${TLD}
         - traefik.enable=true
-        - traefik.port=8500
-        - traefik.protocol=https
+        - traefik.port=8501
+        - traefik.protocol=http
