@@ -86,9 +86,11 @@ docker stack deploy -c ./consul/consul.agent.stack.yml consul_agent
 docker stack deploy -c ./traefik/traefik.stack.yml traefik
 
 # Generate GPG keys for root token and seal key tokens
+CONSUL_URI="https://$(docker info --format '{{.Name}}')"
+
  docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
-    -e CONSUL_URI=https://consul-ui.$TLD \
+    -e CONSUL_URI=$CONSUL_URI \
     estenrye/vault-gpg-keygen\
     root_token_key_password \
     seal_key_password1 \
