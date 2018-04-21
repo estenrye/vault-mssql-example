@@ -142,7 +142,7 @@ curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @database_role
 
 # Create a token for accessing the role id and secret id.  Associate the appropriate policy
 tokenResponse=$(curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @token_create_todo_bootstrapToken.json $VAULT_URI/v1/auth/token/create)
-SECRET_REQUEST_TOKEN=$(echo $tokenResponse | ../bin/jq --raw-output '.auth.client_token')
+SECRET_REQUEST_TOKEN=$(echo $tokenResponse | jq --raw-output '.auth.client_token')
 echo "export BOOTSTRAP_TOKEN=$SECRET_REQUEST_TOKEN"
 ########################################################################################
 # Get Credentials
@@ -150,11 +150,11 @@ echo "export BOOTSTRAP_TOKEN=$SECRET_REQUEST_TOKEN"
 
 # Fetch the identifier of the role
 roleIdentifierResponse=$(curl --request GET --header "X-Vault-Token: $SECRET_REQUEST_TOKEN" $VAULT_URI/v1/auth/approle/role/todo/role-id)
-ROLE_ID=$(echo $roleIdentifierResponse | ../bin/jq --raw-output '.data.role_id')
+ROLE_ID=$(echo $roleIdentifierResponse | jq --raw-output '.data.role_id')
 
 # Create a new secret identifier under the role
 secretIdentifierResponse=$(curl --request POST --header "X-Vault-Token: $SECRET_REQUEST_TOKEN" $VAULT_URI/v1/auth/approle/role/todo/secret-id)
-SECRET_ID=$(echo $secretIdentifierResponse | ../bin/jq --raw-output '.data.secret_id')
+SECRET_ID=$(echo $secretIdentifierResponse | jq --raw-output '.data.secret_id')
 
 # Login using Role Id and Secret Id.
 tokenResponse=$(curl --request POST \
@@ -162,7 +162,7 @@ tokenResponse=$(curl --request POST \
         \"role_id\":\"$ROLE_ID\",
         \"secret_id\":\"$SECRET_ID\"
     }" $VAULT_URI/v1/auth/approle/login)
-ROLE_TOKEN=$(echo $tokenResponse | ../bin/jq --raw-output '.auth.client_token')
+ROLE_TOKEN=$(echo $tokenResponse | jq --raw-output '.auth.client_token')
 
 # Request a credential
 curl --request GET --header "X-Vault-Token: $ROLE_TOKEN" $VAULT_URI/v1/database/creds/todoApp_rw
