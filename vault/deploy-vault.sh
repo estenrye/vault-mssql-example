@@ -5,7 +5,7 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 export CONSUL_SERVER="consul-server.$PRIVATE_HOSTED_ZONE:8500"
-export VAULT_SERVER="vault-$(docker info --format '{{.Name}}'):8200"
+export VAULT_SERVER="vault-$(docker info --format '{{.Name}}')"
 
 mkdir -p /home/docker/vault
 sed "s/<<ACL_TOKEN>>/$VAULT_CONSUL_TOKEN/g" $SCRIPTPATH/vault.hcl |

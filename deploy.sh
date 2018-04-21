@@ -101,17 +101,16 @@ docker run --rm -it\
     seal_key_password4
 
 export CONSUL_SERVER="consul-server.$PRIVATE_HOSTED_ZONE:8500"
+export VAULT_SERVER="vault-$PRIVATE_HOSTED_ZONE"   
 
 # Deploy Vault on each master node.
 /bin/sh $SCRIPTPATH/vault/deploy-vault.sh
-
-export VAULT_SERVER="vault-$PRIVATE_HOSTED_ZONE:8200"
 
 # Initialize the Vault
 docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
     -e CONSUL_URI=https://$CONSUL_SERVER \
-    -e VAULT_URI=https://$VAULT_SERVER \
+    -e VAULT_URI=https://$VAULT_SERVER:8200 \
     -v /home/docker/consul/certs:/consul/certs \
     --network default_net \
     estenrye/vault-init
