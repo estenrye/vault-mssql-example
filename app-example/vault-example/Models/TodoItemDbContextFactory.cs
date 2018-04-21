@@ -6,13 +6,14 @@ using Tools;
 
 namespace vault_example.Models
 {
-    public class TodoItemDbContextFactory : ITodoItemDesignTimeDbContextFactory
+    public class TodoItemDbContextFactory : ITodoItemDesignTimeDbContextFactory, IDesignTimeDbContextFactory<TodoItemDbContext>
     {
         private readonly IVaultSqlCredentials CredentialVault;
         private readonly IConfiguration Configuration;
 
         public TodoItemDbContextFactory()
         {
+            Console.WriteLine("Using Mock VaultSqlCredentials manager.");
             var basePath = AppContext.BaseDirectory;
             var environmentName = Environment.GetEnvironmentVariable("Hosting:Environment");
             var builder = new ConfigurationBuilder()
@@ -27,6 +28,7 @@ namespace vault_example.Models
 
         public TodoItemDbContextFactory(IConfiguration config, IVaultSqlCredentials vault)
         {
+            Console.WriteLine("Using VaultSqlCredentials manager.");
             Configuration = config;
             CredentialVault = vault;
         }
