@@ -100,27 +100,59 @@ docker run --rm -it\
     seal_key_password3 \
     seal_key_password4
 
-export CONSUL_SERVER="consul-server.$PRIVATE_HOSTED_ZONE:8500"
+export CONSUL_SERVER="consul-server.$PRIVATE_HOSTED_ZONE"
 export VAULT_SERVER="vault-$PRIVATE_HOSTED_ZONE"   
 
-# Deploy Vault on each master node.
+# Deploy Vault on each master node.  Repeat this step for every valut instance.
 /bin/sh $SCRIPTPATH/vault/deploy-vault.sh
 
-# Initialize the Vault
+# Initialize the Vault.  This step only needs to be run on the first vault instance
 docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
-    -e CONSUL_URI=https://$CONSUL_SERVER \
+    -e CONSUL_URI=https://$CONSUL_SERVER:8500 \
     -e VAULT_URI=https://$VAULT_SERVER:8200 \
     -v /home/docker/consul/certs:/consul/certs \
     --network default_net \
     estenrye/vault-init
 
-# Unseal the vault
+# Unseal the vault.  Repeat these steps on every vault instance.
 docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
-    -e CONSUL_URI=https://consul-ui.$TLD \
-    -e VAULT_URI=$VAULT_REDIRECT_ADDR \
+    -e CONSUL_URI=https://$CONSUL_SERVER:8500 \
+    -e VAULT_URI=https://$VAULT_SERVER:8200 \
+    -v /home/docker/consul/certs:/consul/certs \
     --network default_net \
     estenrye/vault-unseal \
-    seal_key_index \
-    seal_keypassword
+    1 \
+    seal_key_password1
+
+docker run --rm \
+    -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
+    -e CONSUL_URI=https://$CONSUL_SERVER:8500 \
+    -e VAULT_URI=https://$VAULT_SERVER:8200 \
+    -v /home/docker/consul/certs:/consul/certs \
+    --network default_net \
+    estenrye/vault-unseal \
+    2 \
+    seal_key_password2
+
+docker run --rm \
+    -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
+    -e CONSUL_URI=https://$CONSUL_SERVER:8500 \
+    -e VAULT_URI=https://$VAULT_SERVER:8200 \
+    -v /home/docker/consul/certs:/consul/certs \
+    --network default_net \
+    estenrye/vault-unseal \
+    3 \
+    seal_key_password3
+
+docker run --rm \
+    -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
+    -e CONSUL_URI=https://$CONSUL_SERVER:8500 \
+    -e VAULT_URI=https://$VAULT_SERVER:8200 \
+    -v /home/docker/consul/certs:/consul/certs \
+    --network default_net \
+    estenrye/vault-unseal \
+    4 \
+    seal_key_password4
+
