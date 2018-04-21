@@ -14,7 +14,7 @@ sed "s/<<CONSUL_SERVER>>/$CONSUL_SERVER/g" > /home/docker/vault/vault.hcl
 docker run -d --name vault \
     --network default_net \
     --network-alias vault.${PRIVATE_HOSTED_ZONE} \
-    --network-alias vault-${VAULT_SERVER} \
+    --network-alias ${VAULT_SERVER} \
     --restart always \
     --add-host "$(docker info --format '{{.Name}}'):$(hostname -i)" \
     -e 'VAULT_REDIRECT_INTERFACE=eth0' \

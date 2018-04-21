@@ -114,7 +114,6 @@ docker run --rm \
     -e VAULT_URI=https://$VAULT_SERVER \
     -v /home/docker/consul/certs:/consul/certs \
     --network default_net \
-    --add-host "$(docker info --format '{{.Name}}'):$(hostname -i)" \
     estenrye/vault-init
 
 # Unseal the vault
