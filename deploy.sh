@@ -105,7 +105,7 @@ export CONSUL_SERVER="consul-server.$PRIVATE_HOSTED_ZONE:8500"
 # Deploy Vault on each master node.
 /bin/sh $SCRIPTPATH/vault/deploy-vault.sh
 
-export VAULT_SERVER="$(docker info --format '{{.Name}}'):8200"
+export VAULT_SERVER="vault-$PRIVATE_HOSTED_ZONE:8200"
 
 # Initialize the Vault
 docker run --rm \
