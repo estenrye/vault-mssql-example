@@ -86,26 +86,35 @@ docker stack deploy -c ./consul/consul.agent.stack.yml consul_agent
 docker stack deploy -c ./traefik/traefik.stack.yml traefik
 
 # Generate GPG keys for root token and seal key tokens
-CONSUL_URI="https://$(docker info --format '{{.Name}}')"
+CONSUL_URI="https://$(docker info --format '{{.Name}}'):8500"
 
- docker run --rm \
+docker run --rm -it\
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
-    -e CONSUL_URI=$CONSUL_URI \
+    -e CONSUL_URI="https://consul-server.$PRIVATE_HOSTED_ZONE:8500" \
+    --network default_net \
+    -v /home/docker/consul/certs:/consul/certs \
     estenrye/vault-gpg-keygen\
     root_token_key_password \
     seal_key_password1 \
     seal_key_password2 \
     seal_key_password3 \
-    seal_key_passwordn
+    seal_key_password4
+
+export CONSUL_SERVER="consul-server.$PRIVATE_HOSTED_ZONE:8500"
 
 # Deploy Vault on each master node.
 /bin/sh $SCRIPTPATH/vault/deploy-vault.sh
 
+export VAULT_SERVER="$(docker info --format '{{.Name}}'):8200"
+
 # Initialize the Vault
 docker run --rm \
     -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
-    -e CONSUL_URI=https://consul-ui.$TLD \
+    -e CONSUL_URI=https://$CONSUL_SERVER \
+    -e VAULT_URI=https://$VAULT_SERVER \
+    -v /home/docker/consul/certs:/consul/certs \
     --network default_net \
+    --add-host "$(docker info --format '{{.Name}}'):$(hostname -i)" \
     estenrye/vault-init
 
 # Unseal the vault
