@@ -23,9 +23,12 @@ Bhavik Kumar - Your blog posts on Consul and Vault were extremely helpful.
 - https://bhavik.io/2017/12/19/consul-with-docker-swarm-mode.html
 - https://bhavik.io/2018/01/09/vault-with-docker-swarm-mode.html
 
+Dipesh from medium.com - Your blog post saved me a ton of time figuring out which LetsEncrypt certs to use.
+- https://medium.com/@dipeshgtm/vault-or-how-i-learned-to-stop-worrying-and-manage-my-secrets-rails-vault-yaml-github-ssl-693f4a928c02
+
 GnuPG Documentation
 - How to generate a key unattended: https://www.gnupg.org/documentation/manuals/gnupg/Unattended-GPG-key-generation.html
 - How to export a key unattended: https://lists.gnupg.org/pipermail/gnupg-users/2017-April/058162.html
 - Great cheat sheet for exporting keys: http://irtfweb.ifa.hawaii.edu/~lockhart/gpg/
 
-See https://www.consul.io/docs/agent/options.html for encrypt value.
+Setting up DDNS in AWS Route53: https://github.com/aws-samples/aws-lambda-ddns-function

@@ -7,25 +7,35 @@ networks:
 services:
   # Deploy the consul server instances
   server:
-    image: consul:latest
+    image: estenrye/consul:latest
     networks:
       default_net:
         aliases:
-          - consul.server
+          - consul-server.${PRIVATE_HOSTED_ZONE}
     environment:
       - 'CONSUL_LOCAL_CONFIG={
-            "acl_datacenter":"${REGION}",
+            "acl_datacenter":"${CONSUL_DATACENTER}",
             "acl_master_token":"${MASTER_TOKEN}",
             "acl_default_policy": "deny",
             "acl_down_policy": "extend-cache",
             "acl_agent_token":"${MASTER_TOKEN}",
             "leave_on_terminate" : true,
-            "server_name" : "server.${REGION}.consul",
+            "server_name" : "<<SERVER_NAME>>",
             "skip_leave_on_interrupt" : true,
             "autopilot": {
               "cleanup_dead_servers": true
             },
-            "disable_update_check": true
+            "disable_update_check": true,
+            "key_file":"/consul/certs/privkey.pem",
+            "cert_file":"/consul/certs/cert.pem",
+            "ca_file":"/consul/certs/fullchain.pem",
+            "ports":{
+              "http":8501,
+              "https":8500
+            },
+            "verify_incoming": true,
+            "verify_incoming_rpc": true,
+            "verify_outgoing": true 
           }'
     command: 
       - "agent"
@@ -35,10 +45,9 @@ services:
       - "-bootstrap-expect=${MANAGER_COUNT}"
       - "-client=0.0.0.0"
       - "-data-dir=/consul/data"
-      - "-datacenter=${REGION}"
+      - "-datacenter=${CONSUL_DATACENTER}"
       - "-encrypt=${ENCRYPTION_TOKEN}"
-      - "-http-port=8500"
-      - "-retry-join=consul.server"
+      - "-retry-join=consul-server.${PRIVATE_HOSTED_ZONE}"
       - "-log-level=info"
       - "-ui"
     # Mount the data volumes to the container.
@@ -46,6 +55,17 @@ services:
       - type: bind
         source: /home/docker/consul/data
         target: /consul/data
+      - type: bind
+        source: /home/docker/consul/certs
+        target: /consul/certs
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    ports:
+      - mode: host
+        target: 8500
+        published: 8500
+        protocol: tcp
     # Deploy the consul server on all servers which are managers.
     # Use DNS Round Robin instead VIP for discovery. This ensures we get all running
     # consul server instances when querying consul.server
@@ -68,5 +88,5 @@ services:
         - traefik.docker.network=default_net
         - traefik.frontend.rule=Host:consul-ui.${TLD}
         - traefik.enable=true
-        - traefik.port=8500
+        - traefik.port=8501
         - traefik.protocol=http

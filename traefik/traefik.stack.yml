@@ -5,9 +5,13 @@ networks:
     external: true
 services:
   proxy_init:
-    image: traefik:1.6.0-rc3
+    image: traefik:1.6.0-rc6
     environment: 
       - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_HOSTED_ZONE_ID=${AWS_HOSTED_ZONE_ID}
     command:
       - "storeconfig"
       - "--debug=true"
@@ -20,17 +24,26 @@ services:
       - "--acme"
       - "--acme.storage=traefik/acme/account"
       - "--acme.entryPoint=https"
-      - "--acme.httpChallenge.entryPoint=http"
+      - "--acme.dnschallenge"
+      - "--acme.dnschallenge.provider=route53"
+      - "--acme.dnschallenge.delaybeforecheck=10s"
+      - "--acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
       - "--acme.OnHostRule=true"
       - "--acme.onDemand=false"
       - "--acme.email=${EMAIL}"
+      - "--acme.acmelogging=true"
+      - "--acme.domains=*.${TLD}"
       - "--docker"
       - "--docker.swarmmode=true"
       - "--docker.domain=${TLD}"
       - "--docker.exposedbydefault=false"
       - "--docker.watch=true"
       - "--consul"
-      - "--consul.endpoint=consul.server:8500"
+      - "--consul.tls"
+      - "--consul.tls.ca=/consul/certs/fullchain.pem"
+      - "--consul.tls.key=/consul/certs/privkey.pem"
+      - "--consul.tls.cert=/consul/certs/cert.pem"
+      - "--consul.endpoint=consul-server.${PRIVATE_HOSTED_ZONE}:8500"
       - "--consul.prefix=traefik"
     deploy:
       restart_policy:
@@ -40,15 +53,27 @@ services:
           - node.role == manager
     networks:
       - default_net
+    volumes:
+      - type: bind
+        source: /home/docker/consul/certs
+        target: /consul/certs
   proxy:
-    image: traefik:1.6.0-rc3
+    image: traefik:1.6.0-rc6
     command:
       - "--consul"
-      - "--consul.endpoint=consul.server:8500"
+      - "--consul.tls"
+      - "--consul.tls.ca=/consul/certs/fullchain.pem"
+      - "--consul.tls.key=/consul/certs/privkey.pem"
+      - "--consul.tls.cert=/consul/certs/cert.pem"
+      - "--consul.endpoint=consul-server.${PRIVATE_HOSTED_ZONE}:8500"
       - "--consul.prefix=traefik"
       - "--consul.watch=true"
     environment:
       - CONSUL_HTTP_TOKEN=${TRAEFIK_CONSUL_TOKEN}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_HOSTED_ZONE_ID=${AWS_HOSTED_ZONE_ID}
     networks:
       - default_net
     ports:
@@ -63,6 +88,9 @@ services:
         mode: ingress
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: /home/docker/consul/certs
+        target: /consul/certs
     deploy:
       mode: global
       update_config:
