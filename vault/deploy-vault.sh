@@ -4,8 +4,10 @@ SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$(dirname "$SCRIPT")
 
+CONSUL_SERVER="https://$(docker info --format '{{.Name}}'):8500"
 mkdir -p /home/docker/vault
-sed "s/<<ACL_TOKEN>>/$VAULT_TOKEN/g" $SCRIPTPATH/vault.hcl > /home/docker/vault/vault.hcl
+sed "s/<<ACL_TOKEN>>/$VAULT_TOKEN/g" $SCRIPTPATH/vault.hcl |
+sed "s/<<CONSUL_SERVER>>/$CONSUL_SERVER/g" > /home/docker/vault/vault.hcl
 
 docker run -d --name vault \
     --network default_net \
@@ -13,7 +15,7 @@ docker run -d --name vault \
     --restart always \
     --add-host "$(docker info --format '{{.Name}}'):$(hostname -i)" \
     -e 'VAULT_REDIRECT_INTERFACE=eth0' \
-    -e "VAULT_CLUSTER_ADDR=https://$(docker info --format '{{.Name}}'):8500" \
+    -e "VAULT_CLUSTER_ADDR=https://vault.${PRIVATE_HOSTED_ZONE}" \
     -v /home/docker/vault:/config \
     -v /home/docker/consul/certs:/consul/certs \
     --cap-add IPC_LOCK \
