@@ -1,5 +1,6 @@
 storage "consul" {
   address = "<<CONSUL_SERVER>>"
+  advertise_addr = "https://<<CONSUL_SERVER>>"
   path    = "vault"
   scheme  = "https"
   token   = "<<ACL_TOKEN>>"

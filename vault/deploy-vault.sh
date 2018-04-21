@@ -19,6 +19,8 @@ docker run -d --name vault \
     --add-host "$(docker info --format '{{.Name}}'):$(hostname -i)" \
     -e 'VAULT_REDIRECT_INTERFACE=eth0' \
     -e "VAULT_CLUSTER_ADDR=https://vault.${PRIVATE_HOSTED_ZONE}" \
+    -e "VAULT_API_ADDR=https://$VAULT_SERVER:8200" \
+    -e "VAULT_ADDR=https://$VAULT_SERVER:8200"
     -v /home/docker/vault:/config \
     -v /home/docker/consul/certs:/consul/certs \
     --cap-add IPC_LOCK \

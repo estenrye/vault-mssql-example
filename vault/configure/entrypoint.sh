@@ -110,21 +110,27 @@ then
   echo 'Error decrypting Root Token.'
   exit 1
 fi
+echo "export VAULT_TOKEN=$VAULT_TOKEN"
 
 # Enable the AppRole auth method
-curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @auth_enable_appRole.json $VAULT_URI/v1/sys/auth/approle
+echo "enabling AppRole"
+curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @auth_enable_appRole.json $VAULT_URI/v1/sys/auth/approle
 
 # Create a policy for the token used to retreive the app role's Role Id and Secret Id
-curl --request PUT  --header "X-Vault-Token: $VAULT_TOKEN" --data @policy_todo_bootstrapToken.json $VAULT_URI/v1/sys/policy/todo_bootstrapToken
+echo "setting policy for role id and sercet id"
+curl --silent --show-error --fail --request PUT  --header "X-Vault-Token: $VAULT_TOKEN" --data @policy_todo_bootstrapToken.json $VAULT_URI/v1/sys/policy/todo_bootstrapToken
 
 # Create a policy for the app role's permissions 
-curl --request PUT  --header "X-Vault-Token: $VAULT_TOKEN" --data @policy_todo_acl.json $VAULT_URI/v1/sys/policy/todo_acl
+echo "setting policy for app role permissions"
+curl --silent --show-error --fail --request PUT  --header "X-Vault-Token: $VAULT_TOKEN" --data @policy_todo_acl.json $VAULT_URI/v1/sys/policy/todo_acl
 
 # Create an App Role with desired set of policies
-curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @auth_approle_todo.json $VAULT_URI/v1/auth/approle/role/todo
+echo "creating approle"
+curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @auth_approle_todo.json $VAULT_URI/v1/auth/approle/role/todo
 
 # Enable the database secret backend
-curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @mount_database.json $VAULT_URI/v1/sys/mounts/database
+echo "enabling database secret backend"
+curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @mount_database.json $VAULT_URI/v1/sys/mounts/database
 
 # replace template values with variable values.
 database_config=$(cat database_config_mssql.json \
@@ -134,14 +140,18 @@ database_config=$(cat database_config_mssql.json \
     | sed "s/<<DB_PORT>>/$DB_PORT/g")
 
 # Configure the mssql database plugin
-curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data "$database_config" $VAULT_URI/v1/database/config/mssql
+echo "enabling mssql database plugin"
+curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data "$database_config" $VAULT_URI/v1/database/config/mssql
 
 # Configure a database role
-curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @database_roles_todoApp_rw.json $VAULT_URI/v1/database/roles/todoApp_rw
+echo "configuring database role"
+curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @database_roles_todoApp_rw.json $VAULT_URI/v1/database/roles/todoApp_rw
 
 
 # Create a token for accessing the role id and secret id.  Associate the appropriate policy
-tokenResponse=$(curl --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @token_create_todo_bootstrapToken.json $VAULT_URI/v1/auth/token/create)
+echo "create bootstrap token"
+tokenResponse=$(curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @token_create_todo_bootstrapToken.json $VAULT_URI/v1/auth/token/create)
+echo $tokenResponse
 SECRET_REQUEST_TOKEN=$(echo $tokenResponse | jq --raw-output '.auth.client_token')
 echo "export BOOTSTRAP_TOKEN=$SECRET_REQUEST_TOKEN"
 ########################################################################################
@@ -149,20 +159,29 @@ echo "export BOOTSTRAP_TOKEN=$SECRET_REQUEST_TOKEN"
 ########################################################################################
 
 # Fetch the identifier of the role
+echo "fetch Role Id"
 roleIdentifierResponse=$(curl --request GET --header "X-Vault-Token: $SECRET_REQUEST_TOKEN" $VAULT_URI/v1/auth/approle/role/todo/role-id)
+echo $roleIdentifierResponse
 ROLE_ID=$(echo $roleIdentifierResponse | jq --raw-output '.data.role_id')
+echo "export ROLE_ID=$ROLE_ID"
 
 # Create a new secret identifier under the role
+echo "fetch Secret Id"
 secretIdentifierResponse=$(curl --request POST --header "X-Vault-Token: $SECRET_REQUEST_TOKEN" $VAULT_URI/v1/auth/approle/role/todo/secret-id)
+echo $secretIdentifierResponse
 SECRET_ID=$(echo $secretIdentifierResponse | jq --raw-output '.data.secret_id')
+echo "export SECRET_ID=$SECRET_ID"
 
 # Login using Role Id and Secret Id.
+echo "logging in using role id and secret id"
 tokenResponse=$(curl --request POST \
     --data "{
         \"role_id\":\"$ROLE_ID\",
         \"secret_id\":\"$SECRET_ID\"
     }" $VAULT_URI/v1/auth/approle/login)
 ROLE_TOKEN=$(echo $tokenResponse | jq --raw-output '.auth.client_token')
-
+echo $tokenResponse
+echo "export ROLE_TOKEN=$ROLE_TOKEN"
 # Request a credential
-curl --request GET --header "X-Vault-Token: $ROLE_TOKEN" $VAULT_URI/v1/database/creds/todoApp_rw
+echo "retrieving sql credential."
+curl --silent --show-error --fail --request GET --header "X-Vault-Token: $ROLE_TOKEN" $VAULT_URI/v1/database/creds/todoApp_rw
