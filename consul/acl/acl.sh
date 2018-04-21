@@ -3,8 +3,22 @@ SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-cp /consul/certs/chain.pem /usr/local/share/ca-certificates/chain.pem
-cp /consul/certs/cert.pem /usr/local/share/ca-certificates/cert.pem
+if [[ -f /consul/certs/cert.pem ]]
+then
+    cp /consul/certs/cert.pem /usr/local/share/ca-certificates/cert.pem
+else
+    echo '/consul/certs/cert.pem could not be found.  Are you missing a volume mapping to /consul/certs?'
+    exit 1
+fi
+
+if [[ -f /consul/certs/privkey.pem ]]
+then
+    cp /consul/certs/cert.pem /usr/local/share/ca-certificates/cert.pem
+else
+    echo '/consul/certs/privkey.pem could not be found.  Are you missing a volume mapping to /consul/certs?'
+    exit 1
+fi
+
 update-ca-certificates
 
 if [[ -z $MASTER_TOKEN ]]; then
