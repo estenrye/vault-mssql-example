@@ -19,4 +19,5 @@ docker run -d --name vault \
     -v /home/docker/vault:/config \
     -v /home/docker/consul/certs:/consul/certs \
     --cap-add IPC_LOCK \
+    -p 8200:8200 \
     vault server -config=/config/vault.hcl
