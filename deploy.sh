@@ -156,3 +156,20 @@ docker run --rm \
     4 \
     seal_key_password4
 
+# Update database.
+# Add connection information to secrets.json before running this command.
+dotnet ef database update
+
+# Apply vault configurations.
+docker run --rm \
+    -e CONSUL_ACL_TOKEN=$VAULT_KEYGEN_TOKEN \
+    -e CONSUL_URI=https://$CONSUL_SERVER:8500 \
+    -e VAULT_URI=https://vault.$PRIVATE_HOSTED_ZONE:8200 \
+    -e DB_SERVER=$DB_SERVER \
+    -e DB_PORT=1433 \
+    -v /home/docker/consul/certs:/consul/certs \
+    --network default_net \
+    estenrye/vault-configure \
+    root_token_key_password \
+    "$DB_USER" \
+    "$DB_PASS"
