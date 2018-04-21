@@ -132,6 +132,8 @@ curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT
 echo "enabling database secret backend"
 curl --silent --show-error --fail --request POST --header "X-Vault-Token: $VAULT_TOKEN" --data @mount_database.json $VAULT_URI/v1/sys/mounts/database
 
+# need to urlencode the username and password credentials.
+
 # replace template values with variable values.
 database_config=$(cat database_config_mssql.json \
     | sed "s/<<VAULT_DB_USER>>/$VAULT_DB_USER/g" \
