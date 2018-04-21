@@ -1,11 +1,15 @@
 storage "consul" {
-  address = "consul.server:8500"
+  address = "<<CONSUL_SERVER>>"
   path    = "vault"
-  scheme  = "http"
+  scheme  = "https"
   token   = "<<ACL_TOKEN>>"
+  tls_cert_file = "/consul/certs/cert.pem"
+  tls_ca_file   = "/consul/certs/fullchain.pem"
+  tls_key_file  = "/consul/certs/key.pem"
 }
 
 listener "tcp" {
-  address     = "0.0.0.0:8200"
-  tls_disable = 1
+  address       = "0.0.0.0:8200"
+  tls_cert_file = "/consul/certs/cert.pem"
+  tls_key_file  = "/consul/certs/key.pem"
 }
