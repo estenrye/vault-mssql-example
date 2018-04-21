@@ -97,6 +97,12 @@ EOF
 
 echo "Sending Vault initialization request."
 initResponse=$(curl --key /consul/certs/privkey.pem --cert /consul/certs/cert.pem --request PUT --data "$initData" $VAULT_URI/v1/sys/init)
+echo "$initResponse"
+if [[ -z "$initResponse" ]]
+then
+    echo 'Bad response'
+    exit 1
+fi
 echo "Response received."
 keys_base64=$(echo "$initResponse" | jq --raw-output '.keys_base64 | .[]')
 root_token=$(echo "$initResponse" | jq --raw-output '.root_token')
