@@ -4,9 +4,9 @@ SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-CONSUL_SERVER="https://$(docker info --format '{{.Name}}'):8500"
+CONSUL_SERVER="$(docker info --format '{{.Name}}'):8500"
 mkdir -p /home/docker/vault
-sed "s/<<ACL_TOKEN>>/$VAULT_TOKEN/g" $SCRIPTPATH/vault.hcl |
+sed "s/<<ACL_TOKEN>>/$VAULT_CONSUL_TOKEN/g" $SCRIPTPATH/vault.hcl |
 sed "s/<<CONSUL_SERVER>>/$CONSUL_SERVER/g" > /home/docker/vault/vault.hcl
 
 docker run -d --name vault \
