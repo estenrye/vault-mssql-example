@@ -1,0 +1,16 @@
+FROM microsoft/aspnetcore-build:2.0.6-2.1.104 AS publish
+WORKDIR /src
+COPY app-example.sln ./
+COPY Tools/Tools.csproj Tools/
+COPY vault-example/vault-example.csproj vault-example/
+RUN dotnet restore -nowarn:msb3202,nu1503
+COPY . .
+RUN dotnet publish -c Release -o /app vault-example/vault-example.csproj
+
+FROM microsoft/aspnetcore:2.0.6-jessie AS base
+WORKDIR /app
+EXPOSE 80
+WORKDIR /app
+COPY --from=publish /app .
+COPY entrypoint.sh .
+ENTRYPOINT ["/bin/sh", "entrypoint.sh"]
