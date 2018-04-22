@@ -173,3 +173,23 @@ docker run --rm \
     root_token_key_password \
     "$DB_USER" \
     "$DB_PASS"
+
+# Deploy example app
+docker service create -d \
+    -e "Vault:Uri=https://vault.$PRIVATE_HOSTED_ZONE:8200" \
+    -e "Vault:BootstrapToken=$BOOTSTRAP_TOKEN" \
+    -e "DatabaseConnection:Instance=$DB_SERVER,$DB_PORT" \
+    -e "DatabaseConnection:Database=todoApi" \
+    --mode replicated \
+    --replicas 1 \
+    --label "traefik.backend=todoApp" \
+    --label "traefik.docker.network=default_net" \
+    --label "traefik.frontend.rule=Host:todo.${TLD}" \
+    --label "traefik.enable=true" \
+    --label "traefik.port=80" \
+    --label "traefik.protocol=http" \
+    --network default_net \
+    --name todoApp \
+    --mount "type=bind,source=/home/docker/consul/certs,target=/consul/certs" \
+   estenrye/vault-todo-example-app
+
