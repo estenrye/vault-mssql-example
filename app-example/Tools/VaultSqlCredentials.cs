@@ -38,18 +38,27 @@ namespace Tools
             DatabaseRole = config["Vault:Database:RoleName"];
 
             vaultClient = new VaultClient(VaultUri, BootstrapToken);
+            Console.WriteLine($"Attempting to retrieve role id from {VaultUri}");
             var roleIdResponse = vaultClient.Auth.Read<Vault.Models.Auth.AppRole.RoleIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/role-id");
-            var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
             RoleId = roleIdResponse.Result.Data.RoleId;
+            Console.WriteLine($"RoleId: {RoleId}");
+
+            Console.WriteLine($"Attempting to retrieve secret id from {VaultUri}");
+            var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
             SecretId = secretIdResponse.Result.Data.SecretId;
+            Console.WriteLine($"SecretId: {SecretId}");
 
             var appRole = new Vault.Models.Auth.AppRole.LoginRequest()
             {
                 RoleId = RoleId,
                 SecretId = SecretId
             };
+
+            Console.WriteLine($"Attempting to retrieve token from {VaultUri}");
             var loginResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.LoginRequest, Vault.Models.NoData>("approle/login", appRole);
             Token = loginResponse.Result.Auth.ClientToken;
+            Console.WriteLine($"Token: {Token}");
+
             if (loginResponse.Result.Auth.LeaseDuration != 0)
             {
                 TokenExpiration = DateTime.Now.AddSeconds(loginResponse.Result.Auth.LeaseDuration);
@@ -60,11 +69,12 @@ namespace Tools
             {
                 SecretId = SecretId
             };
-
+            Console.WriteLine($"Attempting to retrieve secret id information from {VaultUri}");
             var secretInfo = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdLookupRequest, SecretInfo>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id/lookup", secretIdLookupRequest);
             SecretIdExpiration = secretInfo.Result.Data.expiration_time.LocalDateTime;
             SecretIdNumUses = secretInfo.Result.Data.secret_id_num_uses;
 
+            Console.WriteLine($"Attempting to retrieve token info from {VaultUri}");
             var tokenInfoResponse = vaultClient.Auth.Read<Vault.Models.Auth.Token.LookupResponse>("token/lookup-self");
             TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses;
         }
@@ -74,6 +84,7 @@ namespace Tools
             if (DateTime.Now > SecretIdExpiration || SecretIdNumUses <= 0)
             {
                 vaultClient.Token = BootstrapToken;
+                Console.WriteLine($"Secret Id Expired.  Attempting to retrieve new secret id from {VaultUri}");
                 var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
                 SecretId = secretIdResponse.Result.Data.SecretId;
                 vaultClient.Token = Token;
@@ -90,6 +101,7 @@ namespace Tools
                     RoleId = RoleId,
                     SecretId = SecretId
                 };
+                Console.WriteLine($"Token Expired.  Attempting to retrieve new token from {VaultUri}");
                 var loginResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.LoginRequest, Vault.Models.NoData>("approle/login", appRole);
                 SecretIdNumUses--;
                 Token = loginResponse.Result.Auth.ClientToken;
@@ -104,10 +116,12 @@ namespace Tools
                     SecretId = SecretId
                 };
 
+                Console.WriteLine($"Attempting to retrieve secret id information from {VaultUri}");
                 var secretInfo = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdLookupRequest, SecretInfo>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id/lookup", secretIdLookupRequest);
                 SecretIdExpiration = secretInfo.Result.Data.expiration_time.LocalDateTime;
                 SecretIdNumUses = secretInfo.Result.Data.secret_id_num_uses;
 
+                Console.WriteLine($"Attempting to retrieve token info from {VaultUri}");
                 var tokenInfoResponse = vaultClient.Auth.Read<Vault.Models.Auth.Token.LookupResponse>("token/lookup-self");
                 TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses;
             }
@@ -117,6 +131,7 @@ namespace Tools
         {
             if (Token != null && TokenUsesRemaining <= 1)
             {
+                Console.WriteLine($"Attempting to retrieve token info from {VaultUri}");
                 var tokenInfoResponse = vaultClient.Auth.Read<Vault.Models.Auth.Token.LookupResponse>("token/lookup-self");
                 TokenUsesRemaining = tokenInfoResponse.Result.Data.NumUses;
             }
@@ -124,6 +139,7 @@ namespace Tools
 
             if (string.IsNullOrWhiteSpace(SqlLoginUsername) || DateTime.Now > SqlLoginExpiration)
             {
+                Console.WriteLine($"Attempting to retrieve sql credentials from {VaultUri}");
                 var credentialResponse = vaultClient.Secret.Read<SqlLoginCredentials>($"{DatabaseMountpoint}/creds/{DatabaseRole}");
                 TokenUsesRemaining--;
 

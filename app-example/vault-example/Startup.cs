@@ -16,6 +16,7 @@ namespace vault_example
     {
         public Startup(IHostingEnvironment env)
         {
+            Console.WriteLine("Startup building Configuration.");
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -24,6 +25,7 @@ namespace vault_example
 
             if (env.IsDevelopment())
             {
+                Console.WriteLine("Development mode enabled.  attempting to load user secrets");
                 builder.AddUserSecrets<Startup>();
             }
 
