@@ -41,12 +41,10 @@ namespace Tools
             Console.WriteLine($"Attempting to retrieve role id from {VaultUri}");
             var roleIdResponse = vaultClient.Auth.Read<Vault.Models.Auth.AppRole.RoleIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/role-id");
             RoleId = roleIdResponse.Result.Data.RoleId;
-            Console.WriteLine($"RoleId: {RoleId}");
 
             Console.WriteLine($"Attempting to retrieve secret id from {VaultUri}");
             var secretIdResponse = vaultClient.Auth.Write<Vault.Models.Auth.AppRole.SecretIdResponse>($"{AppRoleMountpoint}/role/{AppRoleName}/secret-id");
             SecretId = secretIdResponse.Result.Data.SecretId;
-            Console.WriteLine($"SecretId: {SecretId}");
 
             var appRole = new Vault.Models.Auth.AppRole.LoginRequest()
             {
